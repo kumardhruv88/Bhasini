@@ -1,497 +1,991 @@
-You are a senior frontend engineer building "Bhasini" — India's production-grade
-multilingual voice agent platform. Prompts 1 and 2 are done.
+You are a senior frontend engineer working on "Bhasini."
+Prompts 1-4 are done. The navbar renders but has WRONG styling.
+
+The original index.html had PERFECT design — warm off-white background,
+black logo, black "Sign up" pill button, correct fonts, correct colors.
+The React version lost all of this. We need to fix it completely.
 
 ════════════════════════════════════════════════════════════════════
-TASK: Build a stunning full-screen intro/splash screen that plays 
-ONCE when the user first visits the site. After it completes, it 
-dissolves into the actual LandingPage. Light theme, warm, premium.
+PROBLEM ANALYSIS (look at current localhost:5174 screenshot):
+  ✗ Navbar background is WHITE (#FFFFFF) — should be transparent 
+    at top, then rgba(247,245,242,0.92) on scroll
+  ✗ Logo "Bhasini" is PURPLE — should be #0D0D0D black
+  ✗ "||" pipe characters are wrong color
+  ✗ BETA badge has purple/pink gradient — should be saffron #FF6B35 
+    to pink #FF3CAC gradient (horizontal)
+  ✗ Nav links wrong color and weight
+  ✗ "Sign up" button is MISSING from desktop navbar
+  ✗ "Log in" has wrong styling
+  ✗ Page background is pure WHITE — should be #F7F5F2 warm off-white
+  ✗ Page body has no content — hero section not connected yet
+  ✗ Hamburger menu shows on desktop — should be hidden above 1024px
 ════════════════════════════════════════════════════════════════════
 
-REFERENCE BEHAVIOR (from SafarX screenshots you analyzed):
-- Dark screen → Hindi text appears first (भाषिणी)
-- Symmetrical revolving circular light halos behind the text
-- Floating ambient particles in background
-- Text transitions from Hindi → English ("Bhasini")
-- Loading counter counts from 0 → 100
-- Tagline fades in below
-- At 100, everything dissolves out and landing page appears
-- Our version: LIGHT theme — warm off-white (#F7F5F2) background, 
-  NOT dark. Saffron and warm gold light halos. Premium and smooth.
+TASK: Fix all styling issues by properly connecting the design 
+system to the React components, then render the complete 
+single-page experience from the original index.html converted 
+to proper React components.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FILE 1: src/components/ui/IntroScreen/IntroScreen.tsx
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DO THIS IN EXACT ORDER:
 
-COMPLETE VISUAL SPEC:
-━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1: VERIFY AND FIX globals.css
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-OUTER CONTAINER:
-  Position: fixed, inset: 0
-  Z-index: 9999 (above everything)
-  Background: #F7F5F2 (warm off-white — Bhasini's base bg)
-  Display: flex, align-items: center, justify-content: center
-  overflow: hidden
-  pointer-events: all (blocks interaction with page behind)
+Open src/styles/globals.css and verify these exact rules exist.
+If any are missing or wrong, fix them:
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-LAYER 1: AMBIENT BACKGROUND PARTICLES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Use a <canvas> element, position: absolute, inset: 0,
-width: 100%, height: 100%, z-index: 0.
-
-In a useEffect, create 28 floating particles on canvas:
-Each particle object:
-  x: random 0 to canvas.width
-  y: random 0 to canvas.height
-  size: random 1.5 to 4 (float)
-  speedX: random -0.18 to 0.18
-  speedY: random -0.22 to 0.22
-  opacity: random 0.15 to 0.55
-  color: randomly pick from:
-    ['#FF6B35', '#FF9A3C', '#FFC53D', '#FFB347', '#E8956D']
-    (warm saffron/gold palette — NOT white or dark)
-  pulseSpeed: random 0.004 to 0.012
-  pulseOffset: random 0 to Math.PI * 2
-
-Animation loop with requestAnimationFrame:
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-  For each particle:
-    opacity pulses: particle.opacity + Math.sin(tick * particle.pulseSpeed + particle.pulseOffset) * 0.12
-    ctx.beginPath()
-    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
-    ctx.fillStyle = particle.color with pulsed opacity (use rgba parsing or convert hex)
-    ctx.fill()
-    Update x += speedX, y += speedY
-    Wrap around edges (if x < 0 → x = width, etc.)
-  
-  tick increments each frame.
-  Cancel on cleanup.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-LAYER 2: REVOLVING CIRCULAR LIGHT HALOS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-These are 4 concentric elliptical glowing rings
-rendered on a SECOND canvas layer (or as CSS divs),
-centered exactly on the text, revolving slowly.
-
-Implement as 4 <motion.div> elements, each absolutely
-centered (left: 50%, top: 50%, transform: translate(-50%, -50%)):
-
-Ring 1 (innermost):
-  width: 280px, height: 80px
-  border-radius: 50%
-  border: 1.5px solid rgba(255, 107, 53, 0.35)
-  box-shadow: 
-    0 0 20px rgba(255, 107, 53, 0.15),
-    0 0 60px rgba(255, 107, 53, 0.08),
-    inset 0 0 20px rgba(255, 107, 53, 0.05)
-  animation: framer-motion animate with:
-    rotate: [0, 360]
-    transition: duration: 8, repeat: Infinity, ease: 'linear'
-
-Ring 2:
-  width: 420px, height: 120px
-  border-radius: 50%
-  border: 1px solid rgba(255, 154, 60, 0.25)
-  box-shadow:
-    0 0 30px rgba(255, 154, 60, 0.10),
-    0 0 80px rgba(255, 154, 60, 0.05)
-  framer-motion: rotate: [360, 0]
-    transition: duration: 12, repeat: Infinity, ease: 'linear'
-
-Ring 3:
-  width: 580px, height: 170px
-  border-radius: 50%
-  border: 1px solid rgba(255, 197, 61, 0.18)
-  box-shadow:
-    0 0 40px rgba(255, 197, 61, 0.08),
-    0 0 100px rgba(255, 197, 61, 0.04)
-  framer-motion: rotate: [0, 360]
-    transition: duration: 18, repeat: Infinity, ease: 'linear'
-
-Ring 4 (outermost):
-  width: 780px, height: 230px
-  border-radius: 50%
-  border: 0.5px solid rgba(255, 107, 53, 0.10)
-  box-shadow:
-    0 0 60px rgba(255, 107, 53, 0.05)
-  framer-motion: rotate: [360, 0]
-    transition: duration: 26, repeat: Infinity, ease: 'linear'
-
-CENTRAL RADIAL GLOW (behind text, not revolving):
-  position: absolute, centered
-  width: 400px, height: 400px
-  border-radius: 50%
-  background: radial-gradient(circle,
-    rgba(255,107,53,0.12) 0%,
-    rgba(255,154,60,0.07) 35%,
-    rgba(255,197,61,0.04) 60%,
-    transparent 80%
-  )
-  filter: blur(20px)
-  pointer-events: none
-  z-index: 1
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-LAYER 3: MAIN TEXT SEQUENCE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Position: relative, z-index: 10
-Display: flex, flex-direction: column
-align-items: center, gap: 0
-
-TEXT ANIMATION SEQUENCE — controlled by a phase state:
-  Phase 0 (0ms–800ms): Nothing visible, rings already revolving
-  Phase 1 (800ms–2200ms): Hindi text "भाषिणी" fades + scales in
-  Phase 2 (2200ms–3400ms): Hindi text fades out
-  Phase 3 (3400ms–4800ms): English text "Bhasini" fades + scales in
-  Phase 4 (4800ms onwards): Tagline appears, counter starts
-
-Implement with useEffect + setTimeout chain:
-  const [phase, setPhase] = useState(0)
-  useEffect:
-    const t1 = setTimeout(() => setPhase(1), 800)
-    const t2 = setTimeout(() => setPhase(2), 2200)
-    const t3 = setTimeout(() => setPhase(3), 3400)
-    const t4 = setTimeout(() => setPhase(4), 4800)
-    return () => clearAll timeouts
-
-HINDI TEXT "भाषिणी":
-  AnimatePresence + motion.div, key="hindi"
-  Show when: phase === 1
-  
-  Styles:
-    font-family: 'Noto Sans Devanagari', sans-serif
-    (add to Google Fonts import: add 
-     &family=Noto+Sans+Devanagari:wght@100..900
-     to the existing fonts URL)
-    font-size: clamp(56px, 8vw, 96px)
-    font-weight: 300
-    color: var(--color-text) = #0D0D0D
-    letter-spacing: 0.06em
-    line-height: 1
-    text-align: center
-  
-  framer-motion variants:
-    initial: { opacity: 0, scale: 0.88, filter: 'blur(12px)' }
-    animate: { opacity: 1, scale: 1, filter: 'blur(0px)',
-      transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } }
-    exit: { opacity: 0, scale: 1.06, filter: 'blur(8px)',
-      transition: { duration: 0.6, ease: [0.4, 0, 1, 1] } }
-
-ENGLISH TEXT "Bhasini":
-  AnimatePresence + motion.div, key="english"
-  Show when: phase >= 3
-  
-  Structure — two spans inside:
-    <span style="
-      font-family: var(--font-display) = 'Plus Jakarta Sans'
-      font-weight: 800
-      font-size: clamp(64px, 9vw, 108px)
-      color: #0D0D0D
-      letter-spacing: -0.03em
-    ">Bhasi</span>
-    <span style="
-      font-family: var(--font-display)
-      font-weight: 800
-      font-size: clamp(64px, 9vw, 108px)
-      background: linear-gradient(135deg, #FF6B35 0%, #FF3CAC 50%, #FF9A3C 100%)
-      -webkit-background-clip: text
-      -webkit-text-fill-color: transparent
-      background-clip: text
-      letter-spacing: -0.03em
-    ">ni</span>
-  
-  framer-motion:
-    initial: { opacity: 0, y: 24, filter: 'blur(16px)' }
-    animate: { opacity: 1, y: 0, filter: 'blur(0px)',
-      transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] } }
-    exit: { opacity: 0, y: -16, filter: 'blur(8px)',
-      transition: { duration: 0.5 } }
-
-TAGLINE (appears at phase 4):
-  Text: "Voice Intelligence. In Every Indian Language."
-  AnimatePresence + motion.p, key="tagline"
-  Show when: phase >= 4
-  
-  Styles:
-    font-family: var(--font-body) = 'DM Sans'
-    font-size: clamp(13px, 1.8vw, 16px)
-    font-weight: 400
-    color: var(--color-text-muted) = #6B6B6B
-    letter-spacing: 0.12em
-    text-transform: uppercase
-    text-align: center
-    margin-top: 24px
-  
-  framer-motion:
-    initial: { opacity: 0, y: 10 }
-    animate: { opacity: 1, y: 0, transition: { duration: 0.8, delay: 0.2 } }
-    exit: { opacity: 0 }
-
-LANGUAGE CHIPS ROW (appears at phase 4, 0.4s after tagline):
-  Below tagline, margin-top: 20px
-  Display: flex, gap: 8px, justify-content: center, flex-wrap: wrap
-  
-  Chips array: ['हि', 'EN', 'தமி', 'తెలు', 'मरा', 'ਪੰਜ', 'HG']
-  
-  Each chip — motion.span with staggered delay:
-    framer-motion:
-      initial: { opacity: 0, scale: 0.8, y: 8 }
-      animate: { opacity: 1, scale: 1, y: 0,
-        transition: { duration: 0.4, delay: 0.4 + index * 0.06,
-          ease: [0.16, 1, 0.3, 1] } }
-    
-    Styles:
-      font-family: var(--font-body)
-      font-size: 10px
-      font-weight: 600
-      color: var(--color-text-muted)
-      padding: 4px 10px
-      background: rgba(255, 107, 53, 0.06)
-      border: 1px solid rgba(255, 107, 53, 0.20)
-      border-radius: 9999px
-      letter-spacing: 0.04em
-      user-select: none
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-LAYER 4: LOADING COUNTER
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Position: absolute
-Bottom: clamp(40px, 6vh, 72px)
-Left: 50%, transform: translateX(-50%)
-z-index: 10
-
-Counter starts ONLY at phase 4.
-Total counting duration: 2400ms (counts 0 → 100 over ~2.4 seconds)
-
-Counting logic:
-  const [count, setCount] = useState(0)
-  const [counterStarted, setCounterStarted] = useState(false)
-  
-  When phase reaches 4:
-    setCounterStarted(true)
-  
-  useEffect when counterStarted becomes true:
-    Use requestAnimationFrame with easing:
-    startTime = performance.now()
-    duration = 2400
-    
-    function tick(now):
-      elapsed = now - startTime
-      progress = Math.min(elapsed / duration, 1)
-      // Eased progress — ease out cubic:
-      easedProgress = 1 - Math.pow(1 - progress, 3)
-      currentCount = Math.floor(easedProgress * 100)
-      setCount(currentCount)
-      if progress < 1: requestAnimationFrame(tick)
-      else: 
-        setCount(100)
-        setTimeout(() => onComplete(), 600) // trigger exit after pause
-    
-    requestAnimationFrame(tick)
-
-Counter display:
-  Three separate elements stacked vertically, centered:
-
-  1. Progress bar:
-    Width: 120px, height: 1px
-    Background: var(--color-border)
-    Border-radius: 1px
-    Position relative, margin-bottom: 16px
-    
-    Inner fill div:
-      Position: absolute, inset-y: 0, left: 0
-      Width: `${count}%`
-      Background: linear-gradient(90deg, #FF6B35, #FF9A3C)
-      Border-radius: 1px
-      Transition: width 50ms linear
-
-  2. Number:
-    {count.toString().padStart(3, '0')}
-    font-family: var(--font-mono) = 'JetBrains Mono'
-    font-size: 13px
-    font-weight: 500
-    color: var(--color-accent) = #FF6B35
-    letter-spacing: 0.16em
-    text-align: center
-
-  3. Label (optional, subtle):
-    "LOADING"
-    font-family: var(--font-body)
-    font-size: 9px
-    font-weight: 600
-    color: var(--color-text-subtle) = #9E9E9E
-    letter-spacing: 0.20em
-    text-transform: uppercase
-    margin-top: 6px
-    text-align: center
-  
-  The whole counter block:
-    framer-motion: initial:{opacity:0} animate:{opacity:1,
-      transition:{duration:0.6}} — appears with phase 4
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-LAYER 5: CORNER BRACKETS (decorative)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Exactly like SafarX's corner L-brackets seen in screenshots.
-Four absolute-positioned corner brackets made of CSS borders:
-
-Each bracket: 28px × 28px element
-  Top-left: border-top: 1px solid rgba(255,107,53,0.30),
-             border-left: 1px solid rgba(255,107,53,0.30)
-             position absolute, top:20px, left:20px
-
-  Top-right: border-top: 1px solid rgba(255,107,53,0.30),
-              border-right: 1px solid rgba(255,107,53,0.30)
-              position absolute, top:20px, right:20px
-
-  Bottom-left: border-bottom: 1px solid rgba(255,107,53,0.30),
-                border-left: 1px solid rgba(255,107,53,0.30)
-                position absolute, bottom:20px, left:20px
-
-  Bottom-right: border-bottom: 1px solid rgba(255,107,53,0.30),
-                 border-right: 1px solid rgba(255,107,53,0.30)
-                 position absolute, bottom:20px, right:20px
-
-  framer-motion on all four:
-    initial: { opacity: 0, scale: 0.85 }
-    animate: { opacity: 1, scale: 1,
-      transition: { duration: 1.2, delay: 0.3, ease: [0.16,1,0.3,1] } }
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EXIT ANIMATION — onComplete() function
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-onComplete is a prop passed from parent: onComplete: () => void
-
-When called (after count reaches 100 + 600ms pause):
-  Animate the entire outer container out:
-  
-  Use a motionValue or state: const [exiting, setExiting] = useState(false)
-  When onComplete is called internally: setExiting(true)
-  
-  The outer <motion.div> wrapper gets:
-    animate={exiting ? { opacity: 0, scale: 1.04, filter: 'blur(12px)' } : {}}
-    transition={{ duration: 0.8, ease: [0.4, 0, 1, 1] }}
-    onAnimationComplete: when exiting, call the prop onComplete()
-
-Total intro timeline:
-  0ms: screen appears, rings start revolving, particles float
-  300ms: corner brackets appear
-  800ms: भाषिणी appears
-  2200ms: भाषिणी exits
-  3400ms: Bhasini appears (gradient "ni")
-  4800ms: tagline + language chips appear, counter starts
-  4800ms→7200ms: counter counts 0→100 with eased speed
-  7800ms: exit animation begins (after 600ms pause at 100)
-  8600ms: onComplete fires, LandingPage becomes visible
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PROPS INTERFACE:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-interface IntroScreenProps {
-  onComplete: () => void
-}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FILE 2: src/components/ui/IntroScreen/index.ts
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-export { default } from './IntroScreen'
-export { default as IntroScreen } from './IntroScreen'
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FILE 3: Update src/App.tsx — integrate IntroScreen
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Add to App.tsx:
-
-import IntroScreen from './components/ui/IntroScreen'
-
-Inside App component, add state:
-  const [introComplete, setIntroComplete] = useState(false)
-
-Check if already seen this session:
-  const [introComplete, setIntroComplete] = useState(() => {
-    return sessionStorage.getItem('bhasini_intro_seen') === 'true'
-  })
-  
-  const handleIntroComplete = () => {
-    sessionStorage.setItem('bhasini_intro_seen', 'true')
-    setIntroComplete(true)
-  }
-
-In the JSX, wrap everything:
-  <>
-    <AnimatePresence>
-      {!introComplete && (
-        <IntroScreen key="intro" onComplete={handleIntroComplete} />
-      )}
-    </AnimatePresence>
-    
-    <AnimatePresence mode="wait" initial={false}>
-      {introComplete && (
-        <Suspense fallback={<LoadingScreen />}>
-          <Routes location={location} key={location.pathname}>
-            ... all routes ...
-          </Routes>
-        </Suspense>
-      )}
-    </AnimatePresence>
-  </>
-
-Note: Using sessionStorage means intro plays once per browser session.
-On refresh it plays again. On navigation within the app it does NOT replay.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FILE 4: Update Google Fonts URL in globals.css
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Replace the existing @import with:
-
+The @import line MUST be the very first line of the file:
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,opsz,wght@0,6..18,200..800;1,6..18,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-COMPLETE IMPORTS REQUIRED IN IntroScreen.tsx:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+The :root block MUST contain exactly:
+:root {
+  --color-bg: #F7F5F2;
+  --color-bg-dark: #0D0D0D;
+  --color-text: #0D0D0D;
+  --color-text-muted: #6B6B6B;
+  --color-text-subtle: #9E9E9E;
+  --color-card: #EFEFED;
+  --color-card-hover: #E8E6E3;
+  --color-border: #E0DED9;
+  --color-border-strong: #C8C5C0;
+  --color-surface: #FFFFFF;
+  --color-accent: #FF6B35;
+  --color-accent-light: #FF8F5E;
+  --color-accent-bg: #FFF2EC;
+  --color-accent-hover: #E85A25;
+  --color-blue: #1A73E8;
+  --color-blue-light: #4D90F0;
+  --color-blue-bg: #EBF3FE;
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --nav-height: 64px;
+  --max-width: 1280px;
+  --radius-pill: 9999px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-3xl: 40px;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.10);
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.05);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-normal: 220ms;
+}
+
+body rule MUST be:
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+#root rule MUST be:
+#root {
+  background-color: var(--color-bg);
+  min-height: 100vh;
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 2: FIX index.html (the Vite root HTML file)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Open the ROOT index.html (not src/ — the project root index.html).
+It should look exactly like this — replace it entirely:
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Bhasini — Voice Intelligence in Every Indian Language. Deploy production-grade voice agents in Hindi, English, Tamil, Telugu, Marathi, Punjabi and more." />
+    <title>Bhasini | Voice Intelligence. In Every Indian Language.</title>
+    <style>
+      /* Critical inline CSS to prevent FOUC (Flash of Unstyled Content) */
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #F7F5F2;
+        color: #0D0D0D;
+      }
+      #root {
+        background-color: #F7F5F2;
+      }
+      /* Hide root until React hydrates to prevent flash */
+      #root:empty {
+        background-color: #F7F5F2;
+        min-height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 3: COMPLETELY REWRITE Navbar.tsx
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Replace the entire content of 
+src/components/layout/Navbar/Navbar.tsx with this:
+
+The navbar must use ONLY inline styles + CSS variables.
+NO Tailwind classes. NO external class names.
+This prevents any class conflicts or missing styles.
+
+Here is the EXACT complete component:
 
 import React, { useState, useEffect, useRef } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Menu, X, ChevronDown, Bot, Mic, CreditCard, BookOpen, BarChart3 } from 'lucide-react'
 
-No other external dependencies needed.
-All styling via inline style objects using CSS variables.
-No Tailwind classes in this file — pure inline styles for 
-pixel-perfect control over this cinematic sequence.
+// ─── Types ───────────────────────────────────────────────────────
+interface DropdownItem {
+  icon: string
+  label: string
+  desc: string
+  href: string
+}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ACCEPTANCE CRITERIA:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const dropdownItems: DropdownItem[] = [
+  { icon: '🎙️', label: 'BhasiniCreative', desc: 'Generate speech, music & video', href: '/products/creative' },
+  { icon: '🤖', label: 'BhasiniAgents', desc: 'Deploy conversational voice agents', href: '/agents' },
+  { icon: '⚡', label: 'BhasiniAPI', desc: 'Build with our voice API', href: '/docs' },
+  { icon: '📊', label: 'Observatory', desc: 'Monitor agent performance', href: '/app/analytics' },
+]
 
-✓ Background is warm off-white #F7F5F2, NOT dark
-✓ 4 elliptical rings revolve at different speeds, alternating CW/CCW
-✓ Warm saffron/gold particles float gently across screen
-✓ Corner L-brackets appear in saffron-tinted color
-✓ "भाषिणी" appears first in Noto Sans Devanagari weight 300, blurs in
-✓ Hindi text blurs OUT gracefully
-✓ "Bhasini" appears with "ni" in saffron-pink-orange gradient
-✓ Tagline appears in uppercase spaced letters, muted gray
-✓ 7 language chips animate in staggered
-✓ Counter counts 0→100 with ease-out curve, saffron color
-✓ Progress bar fills left→right in saffron gradient
-✓ Entire screen blurs + scales out smoothly on completion
-✓ LandingPage appears underneath after exit
-✓ sessionStorage prevents replay on in-app navigation
-✓ Fully responsive: works on 375px mobile to 1920px desktop
-✓ Rings resize gracefully on mobile (use vw units):
-    On mobile (<768px): multiply all ring widths by 0.55 (use CSS clamp)
-✓ Zero TypeScript errors
-✓ Smooth 60fps — no jank on animation
+const navLinks = [
+  { label: 'Products', href: '/products', hasDropdown: true },
+  { label: 'Agents', href: '/agents', hasDropdown: false },
+  { label: 'Voices', href: '/voices', hasDropdown: false },
+  { label: 'Pricing', href: '/pricing', hasDropdown: false },
+  { label: 'Docs', href: '/docs', hasDropdown: false },
+]
 
-Run npm run dev. Open browser.
-The intro should play in full, then dissolve into the landing page stub.
+const mobileNavLinks = [
+  { label: 'Agents', href: '/agents', icon: <Bot size={18} /> },
+  { label: 'Voices', href: '/voices', icon: <Mic size={18} /> },
+  { label: 'Pricing', href: '/pricing', icon: <CreditCard size={18} /> },
+  { label: 'Docs', href: '/docs', icon: <BookOpen size={18} /> },
+  { label: 'Observatory', href: '/app/analytics', icon: <BarChart3 size={18} /> },
+]
+
+const languageChips = ['हिं', 'EN', 'தமி', 'తెలు', 'मरा', 'ਪੰਜ', 'HG']
+
+// ─── Component ───────────────────────────────────────────────────
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [productsOpen, setProductsOpen] = useState(false)
+  const location = useLocation()
+  const navigate = useNavigate()
+  const productsRef = useRef<HTMLDivElement>(null)
+
+  // Scroll detection
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Close mobile on route change
+  useEffect(() => {
+    setMobileOpen(false)
+    setProductsOpen(false)
+  }, [location.pathname])
+
+  // Lock body scroll
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [mobileOpen])
+
+  // Click outside dropdown
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (productsRef.current && !productsRef.current.contains(e.target as Node)) {
+        setProductsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  const isActive = (href: string) => {
+    if (href === '/') return location.pathname === '/'
+    return location.pathname.startsWith(href)
+  }
+
+  // ─── Styles ────────────────────────────────────────────────────
+  const S = {
+    header: {
+      position: 'fixed' as const,
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '64px',
+      zIndex: 200,
+      backgroundColor: scrolled ? 'rgba(247,245,242,0.92)' : 'rgba(247,245,242,0)',
+      backdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'none',
+      WebkitBackdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'none',
+      borderBottom: scrolled ? '1px solid rgba(224,222,217,0.8)' : '1px solid transparent',
+      transition: 'background-color 300ms ease, border-color 300ms ease, backdrop-filter 300ms ease',
+    },
+    inner: {
+      maxWidth: '1280px',
+      margin: '0 auto',
+      padding: '0 32px',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: '32px',
+    },
+    logo: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      textDecoration: 'none',
+      flexShrink: 0,
+    },
+    logoText: {
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontSize: '20px',
+      fontWeight: 800,
+      color: '#0D0D0D',
+      letterSpacing: '-0.02em',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '1px',
+    },
+    logoPipe: {
+      color: '#9E9E9E',
+      fontWeight: 400,
+      marginRight: '1px',
+    },
+    betaBadge: {
+      background: 'linear-gradient(90deg, #FF6B35 0%, #FF3CAC 100%)',
+      color: 'white',
+      fontSize: '9px',
+      fontWeight: 700,
+      letterSpacing: '0.08em',
+      textTransform: 'uppercase' as const,
+      padding: '3px 8px',
+      borderRadius: '9999px',
+    },
+    nav: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '4px',
+      flex: 1,
+      justifyContent: 'center',
+    },
+    navLinkBase: {
+      fontFamily: "'DM Sans', sans-serif",
+      fontSize: '14px',
+      fontWeight: 500,
+      textDecoration: 'none',
+      padding: '6px 10px',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      border: 'none',
+      background: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '4px',
+      position: 'relative' as const,
+      transition: 'color 150ms ease',
+      whiteSpace: 'nowrap' as const,
+    },
+    authRow: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      flexShrink: 0,
+    },
+    loginBtn: {
+      height: '36px',
+      padding: '0 16px',
+      background: 'transparent',
+      border: 'none',
+      color: '#0D0D0D',
+      fontSize: '14px',
+      fontWeight: 500,
+      fontFamily: "'DM Sans', sans-serif",
+      cursor: 'pointer',
+      borderRadius: '9999px',
+      transition: 'background 150ms ease',
+      whiteSpace: 'nowrap' as const,
+    },
+    signupBtn: {
+      height: '36px',
+      padding: '0 18px',
+      background: '#0D0D0D',
+      border: 'none',
+      color: '#FFFFFF',
+      fontSize: '14px',
+      fontWeight: 600,
+      fontFamily: "'DM Sans', sans-serif",
+      cursor: 'pointer',
+      borderRadius: '9999px',
+      transition: 'background 150ms ease, transform 150ms ease',
+      whiteSpace: 'nowrap' as const,
+    },
+    hamburger: {
+      width: '40px',
+      height: '40px',
+      display: 'none',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      borderRadius: '10px',
+      color: '#0D0D0D',
+      padding: 0,
+    },
+    // Dropdown
+    dropdownWrapper: {
+      position: 'relative' as const,
+    },
+    dropdown: {
+      position: 'absolute' as const,
+      top: 'calc(100% + 10px)',
+      left: '-16px',
+      background: '#FFFFFF',
+      border: '1px solid #E0DED9',
+      borderRadius: '20px',
+      boxShadow: '0 12px 40px rgba(0,0,0,0.10)',
+      padding: '8px',
+      minWidth: '230px',
+      zIndex: 300,
+    },
+    dropdownItem: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      padding: '10px 12px',
+      borderRadius: '14px',
+      cursor: 'pointer',
+      textDecoration: 'none',
+      transition: 'background 150ms ease',
+    },
+    dropdownIcon: {
+      width: '36px',
+      height: '36px',
+      background: '#EFEFED',
+      borderRadius: '10px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '18px',
+      flexShrink: 0,
+    },
+    // Mobile overlay
+    overlay: {
+      position: 'fixed' as const,
+      inset: 0,
+      background: 'rgba(0,0,0,0.4)',
+      backdropFilter: 'blur(4px)',
+      zIndex: 199,
+    },
+    drawer: {
+      position: 'fixed' as const,
+      top: 0,
+      right: 0,
+      width: 'min(320px, 85vw)',
+      height: '100vh',
+      background: '#F7F5F2',
+      zIndex: 400,
+      boxShadow: '0 24px 64px rgba(0,0,0,0.12)',
+      display: 'flex',
+      flexDirection: 'column' as const,
+      overflow: 'hidden',
+    },
+  }
+
+  return (
+    <>
+      {/* NAVBAR */}
+      <motion.header
+        style={S.header}
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div style={S.inner}>
+
+          {/* LOGO */}
+          <Link to="/" style={S.logo}>
+            <span style={S.logoText}>
+              <span style={S.logoPipe}>||</span>Bhasini
+            </span>
+            <span style={S.betaBadge}>BETA</span>
+          </Link>
+
+          {/* DESKTOP NAV — hidden below 1024px via media query in globals.css */}
+          <nav style={S.nav} className="desktop-nav">
+            {navLinks.map((link) => {
+              const active = isActive(link.href)
+              const linkColor = active ? '#0D0D0D' : '#6B6B6B'
+              const linkWeight = active ? 600 : 500
+
+              if (link.hasDropdown) {
+                return (
+                  <div key={link.label} style={S.dropdownWrapper} ref={productsRef}>
+                    <button
+                      style={{ ...S.navLinkBase, color: linkColor, fontWeight: linkWeight }}
+                      onClick={() => setProductsOpen(p => !p)}
+                      onMouseEnter={() => setProductsOpen(true)}
+                    >
+                      {link.label}
+                      <motion.span
+                        animate={{ rotate: productsOpen ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                        style={{ display: 'flex', alignItems: 'center' }}
+                      >
+                        <ChevronDown size={14} />
+                      </motion.span>
+                      {active && (
+                        <motion.span
+                          layoutId="nav-indicator"
+                          style={{
+                            position: 'absolute',
+                            bottom: '-2px',
+                            left: '10px',
+                            right: '10px',
+                            height: '2px',
+                            background: '#FF6B35',
+                            borderRadius: '1px',
+                          }}
+                        />
+                      )}
+                    </button>
+
+                    <AnimatePresence>
+                      {productsOpen && (
+                        <motion.div
+                          style={S.dropdown}
+                          initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -4, scale: 0.97 }}
+                          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                          onMouseLeave={() => setProductsOpen(false)}
+                        >
+                          {dropdownItems.map((item) => (
+                            <div
+                              key={item.label}
+                              style={S.dropdownItem}
+                              onClick={() => { navigate(item.href); setProductsOpen(false) }}
+                              onMouseEnter={e => (e.currentTarget.style.background = '#EFEFED')}
+                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                            >
+                              <div style={S.dropdownIcon}>{item.icon}</div>
+                              <div>
+                                <div style={{
+                                  fontSize: '13px', fontWeight: 600,
+                                  color: '#0D0D0D', fontFamily: "'DM Sans', sans-serif"
+                                }}>
+                                  {item.label}
+                                </div>
+                                <div style={{
+                                  fontSize: '11px', color: '#6B6B6B',
+                                  marginTop: '1px', fontFamily: "'DM Sans', sans-serif"
+                                }}>
+                                  {item.desc}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )
+              }
+
+              return (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  style={{ ...S.navLinkBase, color: linkColor, fontWeight: linkWeight }}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#0D0D0D')}
+                  onMouseLeave={e => (e.currentTarget.style.color = active ? '#0D0D0D' : '#6B6B6B')}
+                >
+                  {link.label}
+                  {active && (
+                    <motion.span
+                      layoutId="nav-indicator"
+                      style={{
+                        position: 'absolute',
+                        bottom: '-2px',
+                        left: '10px',
+                        right: '10px',
+                        height: '2px',
+                        background: '#FF6B35',
+                        borderRadius: '1px',
+                      }}
+                    />
+                  )}
+                </Link>
+              )
+            })}
+          </nav>
+
+          {/* DESKTOP AUTH BUTTONS */}
+          <div style={S.authRow} className="desktop-nav">
+            <button
+              style={S.loginBtn}
+              onClick={() => navigate('/login')}
+              onMouseEnter={e => (e.currentTarget.style.background = '#EFEFED')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              Log in
+            </button>
+            <motion.button
+              style={S.signupBtn}
+              onClick={() => navigate('/signup')}
+              whileHover={{ scale: 1.02, backgroundColor: '#2A2A2A' }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Sign up
+            </motion.button>
+          </div>
+
+          {/* HAMBURGER — visible below 1024px */}
+          <button
+            className="mobile-menu-btn"
+            style={{ ...S.hamburger, display: 'flex' }}
+            onClick={() => setMobileOpen(o => !o)}
+            aria-label="Toggle menu"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {mobileOpen ? (
+                <motion.span key="x"
+                  initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <X size={20} />
+                </motion.span>
+              ) : (
+                <motion.span key="menu"
+                  initial={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Menu size={20} />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+
+        </div>
+      </motion.header>
+
+      {/* MOBILE DRAWER */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              style={S.overlay}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onClick={() => setMobileOpen(false)}
+            />
+
+            {/* Drawer */}
+            <motion.div
+              style={S.drawer}
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {/* Drawer Header */}
+              <div style={{
+                height: '64px', padding: '0 20px',
+                display: 'flex', alignItems: 'center',
+                justifyContent: 'space-between',
+                borderBottom: '1px solid #E0DED9',
+                flexShrink: 0,
+              }}>
+                <Link to="/" style={S.logo} onClick={() => setMobileOpen(false)}>
+                  <span style={S.logoText}>
+                    <span style={S.logoPipe}>||</span>Bhasini
+                  </span>
+                  <span style={S.betaBadge}>BETA</span>
+                </Link>
+                <button
+                  style={{ ...S.hamburger, display: 'flex' }}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Drawer Nav Links */}
+              <div style={{ padding: '12px', flex: 1, overflowY: 'auto' }}>
+                {mobileNavLinks.map((link) => {
+                  const active = isActive(link.href)
+                  return (
+                    <Link
+                      key={link.label}
+                      to={link.href}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '13px 12px',
+                        borderRadius: '14px',
+                        fontSize: '16px',
+                        fontWeight: 500,
+                        color: active ? '#FF6B35' : '#0D0D0D',
+                        background: active ? 'rgba(255,107,53,0.06)' : 'transparent',
+                        textDecoration: 'none',
+                        fontFamily: "'DM Sans', sans-serif",
+                        transition: 'background 150ms',
+                      }}
+                      onClick={() => setMobileOpen(false)}
+                      onMouseEnter={e => {
+                        if (!active) e.currentTarget.style.background = '#EFEFED'
+                      }}
+                      onMouseLeave={e => {
+                        if (!active) e.currentTarget.style.background = 'transparent'
+                      }}
+                    >
+                      <span style={{ color: active ? '#FF6B35' : '#6B6B6B' }}>
+                        {link.icon}
+                      </span>
+                      {link.label}
+                    </Link>
+                  )
+                })}
+              </div>
+
+              {/* Drawer Footer */}
+              <div style={{
+                padding: '16px 12px 32px',
+                borderTop: '1px solid #E0DED9',
+                flexShrink: 0,
+              }}>
+                <button
+                  style={{
+                    width: '100%', height: '44px',
+                    background: '#EFEFED', border: 'none',
+                    borderRadius: '9999px', fontSize: '15px',
+                    fontWeight: 600, color: '#0D0D0D',
+                    fontFamily: "'DM Sans', sans-serif",
+                    cursor: 'pointer', marginBottom: '8px',
+                  }}
+                  onClick={() => { navigate('/login'); setMobileOpen(false) }}
+                >
+                  Log in
+                </button>
+                <button
+                  style={{
+                    width: '100%', height: '44px',
+                    background: '#0D0D0D', border: 'none',
+                    borderRadius: '9999px', fontSize: '15px',
+                    fontWeight: 600, color: 'white',
+                    fontFamily: "'DM Sans', sans-serif",
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => { navigate('/signup'); setMobileOpen(false) }}
+                >
+                  Sign up
+                </button>
+
+                {/* Language chips */}
+                <div style={{ marginTop: '16px' }}>
+                  <div style={{
+                    fontSize: '10px', fontWeight: 600,
+                    letterSpacing: '0.10em', textTransform: 'uppercase',
+                    color: '#9E9E9E', marginBottom: '8px',
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}>
+                    Supported Languages
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {languageChips.map((chip) => (
+                      <span key={chip} style={{
+                        fontSize: '11px', fontWeight: 600,
+                        padding: '4px 10px',
+                        background: '#EFEFED',
+                        border: '1px solid #E0DED9',
+                        borderRadius: '9999px',
+                        color: '#6B6B6B',
+                        fontFamily: "'DM Sans', sans-serif",
+                      }}>
+                        {chip}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 4: ADD RESPONSIVE CSS TO globals.css
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+APPEND these rules to the END of globals.css
+(do not replace anything, just add at the bottom):
+
+/* ─── Navbar Responsive Rules ─────────────────────────────────── */
+
+/* Desktop nav: visible above 1024px */
+.desktop-nav {
+  display: flex !important;
+}
+
+/* Mobile menu button: hidden above 1024px */
+.mobile-menu-btn {
+  display: none !important;
+}
+
+/* Below 1024px: flip visibility */
+@media (max-width: 1023px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+/* Container utility */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 32px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-inline: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding-inline: 16px;
+  }
+}
+
+/* ─── Page transition wrapper ─────────────────────────────────── */
+.page-wrapper {
+  background-color: var(--color-bg);
+  min-height: 100vh;
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 5: FIX LandingPage/index.tsx
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Replace src/pages/LandingPage/index.tsx entirely:
+
+import { motion } from 'framer-motion'
+import { pageVariants } from '../../design-system/motion'
+import Navbar from '../../components/layout/Navbar'
+
+export default function LandingPage() {
+  return (
+    <motion.div
+      className="page-wrapper"
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
+      <Navbar />
+      <main style={{ paddingTop: '64px' }}>
+        
+        {/* ── PLACEHOLDER: Hero section — added in Prompt 4 ── */}
+        <section style={{
+          minHeight: 'calc(100vh - 64px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'var(--color-bg)',
+          flexDirection: 'column',
+          gap: '16px',
+          padding: '80px 32px',
+        }}>
+          
+          {/* Show the logo big as a placeholder */}
+          <div style={{
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontSize: '64px',
+            fontWeight: 800,
+            color: '#0D0D0D',
+            letterSpacing: '-0.03em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+          }}>
+            <span style={{ color: '#9E9E9E', fontWeight: 400 }}>||</span>
+            <span>Bha</span>
+            <span style={{
+              background: 'linear-gradient(135deg, #FF6B35 0%, #FF3CAC 50%, #784BA0 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>sini</span>
+          </div>
+          
+          <p style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: '18px',
+            color: '#6B6B6B',
+            margin: 0,
+            letterSpacing: '0.04em',
+          }}>
+            Voice Intelligence. In Every Indian Language.
+          </p>
+
+          {/* Language pills */}
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
+            {[
+              { script: 'हिं', color: '#FF6B35' },
+              { script: 'EN', color: '#1A73E8' },
+              { script: 'தமி', color: '#22C55E' },
+              { script: 'తెలు', color: '#F59E0B' },
+              { script: 'मरा', color: '#EF4444' },
+              { script: 'ਪੰਜ', color: '#06B6D4' },
+            ].map(({ script, color }) => (
+              <span key={script} style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '13px',
+                fontWeight: 600,
+                padding: '6px 14px',
+                background: 'white',
+                border: '1px solid #E0DED9',
+                borderRadius: '9999px',
+                color: '#0D0D0D',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}>
+                <span style={{
+                  width: '7px', height: '7px',
+                  borderRadius: '50%',
+                  background: color,
+                  flexShrink: 0,
+                  display: 'inline-block',
+                }} />
+                {script}
+              </span>
+            ))}
+          </div>
+
+          <p style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: '13px',
+            color: '#9E9E9E',
+            margin: '16px 0 0',
+          }}>
+            Hero section + all sections load in Prompt 4 →
+          </p>
+        </section>
+
+      </main>
+    </motion.div>
+  )
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 6: FIX vite.config.ts
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Replace vite.config.ts with:
+
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 5173,
+    open: true,
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+  },
+})
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 7: FIX public/favicon.svg
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Create public/favicon.svg with this content:
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="8" fill="#FF6B35"/>
+  <text x="16" y="22" text-anchor="middle" 
+    font-family="sans-serif" font-size="16" 
+    font-weight="bold" fill="white">भ</text>
+</svg>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FINAL VERIFICATION CHECKLIST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+After all steps, run: npm run dev
+
+Open localhost:5173. Verify EVERY point:
+
+NAVBAR:
+✓ Page background is warm off-white #F7F5F2 — NOT white #FFFFFF
+✓ At page top: navbar is fully transparent (can see #F7F5F2 through it)
+✓ After scrolling 20px: navbar becomes frosted glass with blur
+✓ Logo shows "||Bhasini" — pipes are gray (#9E9E9E), "Bhasini" is black (#0D0D0D)
+✓ BETA badge is horizontal gradient saffron→pink, white text, pill shape
+✓ Nav links "Products Agents Voices Pricing Docs" are visible, gray (#6B6B6B)
+✓ "Log in" button visible, transparent background, black text
+✓ "Sign up" button visible, BLACK background (#0D0D0D), WHITE text, pill shape
+✓ On desktop (>1023px): hamburger is HIDDEN
+✓ On mobile (<1023px): nav links and auth buttons are HIDDEN, hamburger shows
+✓ Mobile drawer slides from right, has footer with language chips
+✓ Zero TypeScript errors in console
+✓ Zero CSS errors in console
+
+LANDING PAGE:
+✓ Background is #F7F5F2 warm off-white
+✓ Large "||Bhasini" logo centered with gradient on "sini"
+✓ Tagline visible in muted gray
+✓ Language pills row with colored dots
+✓ Placeholder text for next prompt
+
+If anything above fails, debug and fix before reporting back.

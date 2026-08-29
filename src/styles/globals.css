@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,opsz,wght@0,6..18,200..800;1,6..18,200..800&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --color-bg: #F7F5F2;
+  --color-bg-dark: #0D0D0D;
+  --color-text: #0D0D0D;
+  --color-text-muted: #6B6B6B;
+  --color-text-subtle: #9E9E9E;
+  --color-card: #EFEFED;
+  --color-card-hover: #E8E6E3;
+  --color-border: #E0DED9;
+  --color-border-strong: #C8C5C0;
+  --color-surface: #FFFFFF;
+  --color-accent: #FF6B35;
+  --color-accent-light: #FF8F5E;
+  --color-accent-bg: #FFF2EC;
+  --color-accent-hover: #E85A25;
+  --color-blue: #1A73E8;
+  --color-blue-light: #4D90F0;
+  --color-blue-bg: #EBF3FE;
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --nav-height: 64px;
+  --max-width: 1280px;
+  --radius-pill: 9999px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-3xl: 40px;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.10);
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.05);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-normal: 220ms;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+#root {
+  background-color: var(--color-bg);
+  min-height: 100vh;
+}
+
+/* ─── Navbar Responsive Rules ─────────────────────────────────── */
+
+/* Desktop nav: visible above 1024px */
+.desktop-nav {
+  display: flex !important;
+}
+
+/* Mobile menu button: hidden above 1024px */
+.mobile-menu-btn {
+  display: none !important;
+}
+
+/* Below 1024px: flip visibility */
+@media (max-width: 1023px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+}
+
+/* Container utility */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: 32px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-inline: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding-inline: 16px;
+  }
+}
+
+/* ─── Page transition wrapper ─────────────────────────────────── */
+.page-wrapper {
+  background-color: var(--color-bg);
+  min-height: 100vh;
+}

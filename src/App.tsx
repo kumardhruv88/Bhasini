@@ -1,6 +1,7 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import IntroScreen from './components/ui/IntroScreen';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const AgentExplorerPage = lazy(() => import('./pages/AgentExplorerPage'));
@@ -19,9 +20,8 @@ function LoadingScreen() {
         style={{ 
           width: '56px', 
           height: '56px', 
-          background: 'var(--orb-hero)', 
-          borderRadius: '50%', 
-          animation: 'orb-breathe 1.6s ease-in-out infinite' 
+          background: 'linear-gradient(135deg, #FF6B35 0%, #FF3CAC 100%)', 
+          borderRadius: '50%',
         }} 
       />
       <div 
@@ -41,21 +41,37 @@ function LoadingScreen() {
 
 export default function App() {
   const location = useLocation();
+  const [introComplete, setIntroComplete] = useState(false);
+  
+  const handleIntroComplete = () => {
+    setIntroComplete(true);
+  };
+
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <Suspense fallback={<LoadingScreen />}>
-        <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/agents" element={<AgentExplorerPage />} />
-          <Route path="/agents/:agentId/talk" element={<AgentConversationPage />} />
-          <Route path="/voices" element={<VoicesPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/app/home" element={<DashboardPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Suspense>
-    </AnimatePresence>
+    <>
+      <AnimatePresence>
+        {!introComplete && (
+          <IntroScreen key="intro" onComplete={handleIntroComplete} />
+        )}
+      </AnimatePresence>
+      
+      <AnimatePresence mode="wait" initial={false}>
+        {introComplete && (
+          <Suspense fallback={<LoadingScreen />}>
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/agents" element={<AgentExplorerPage />} />
+              <Route path="/agents/:agentId/talk" element={<AgentConversationPage />} />
+              <Route path="/voices" element={<VoicesPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/app/home" element={<DashboardPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </Suspense>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
