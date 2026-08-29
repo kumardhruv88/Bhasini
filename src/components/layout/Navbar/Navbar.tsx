@@ -344,7 +344,6 @@ export default function Navbar() {
                               onMouseEnter={e => (e.currentTarget.style.background = '#EFEFED')}
                               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                             >
-                              <div style={S.dropdownIcon}>{item.icon}</div>
                               <div>
                                 <div style={{
                                   fontSize: '13px', fontWeight: 600,
