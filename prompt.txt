@@ -1,1065 +1,1899 @@
-You are a senior frontend engineer building "Bhasini."
-All previous pages exist and work. Now build:
-  1. PricingPage (/pricing) — 4 tiers with INR pricing
-  2. LoginPage (/login) — clean auth form
-  3. SignupPage (/signup) — clean auth form
+BHASINI — PROMPT 12: VOICES + DOCUMENTATION
 
-TYPOGRAPHY REFERENCE (same as conversation page):
-  Headlines: Plus Jakarta Sans, weight 300-400, thin elegant
-  Body: DM Sans, weight 300-400, generous line-height
-  Labels: JetBrains Mono, tiny, spaced, uppercase
-  All inline styles + CSS variables only — NO Tailwind
+You are working inside the existing Bhasini project.
 
-════════════════════════════════════════════════════════════════
-PART A: PricingPage
-File: src/pages/PricingPage/index.tsx
-════════════════════════════════════════════════════════════════
+The Bhasini product already has:
+✓ Landing page
+✓ Pricing page
+✓ Login page
+✓ Signup page
+✓ Authenticated dashboard
+✓ Agent discovery page
+✓ Agent detail modal
+✓ Observatory
+✓ Evaluation Kit
+✓ Existing design system
+✓ Existing navigation/routing/components
 
-STATE:
-  const [billing, setBilling] = useState<'monthly'|'annual'>('monthly')
-  const [hoveredTier, setHoveredTier] = useState<string|null>(null)
-  const navigate = useNavigate()
+I have already built and approved the current visual direction.
 
-PRICING DATA:
-  interface PricingTier {
-    id: string
-    name: string
-    badge?: string
-    monthlyPrice: number | null
-    annualPrice: number | null
-    description: string
-    cta: string
-    ctaVariant: 'primary' | 'ghost' | 'accent'
-    highlighted: boolean
-    features: PricingFeature[]
-    limits: { calls: string; languages: string; latency: string; voices: string }
-  }
-  
-  interface PricingFeature {
-    text: string
-    included: boolean
-    note?: string
-  }
+NOW BUILD THE NEXT TWO PUBLIC PRODUCT PAGES:
 
-  const tiers: PricingTier[] = [
+1. VOICES → /voices
+2. DOCUMENTATION → /docs
+
+These pages must feel like they were designed and built as part of the SAME Bhasini product.
+
+DO NOT redesign the existing pages.
+DO NOT modify the login/signup/dashboard visual language.
+DO NOT replace the existing design system.
+DO NOT introduce Tailwind.
+DO NOT introduce a generic documentation template.
+DO NOT make the Voices page look like a generic voice marketplace.
+
+Before coding:
+
+1. Inspect the entire existing src/ structure.
+2. Inspect the current design-system files:
+   - src/design-system/tokens.ts
+   - src/design-system/typography.ts
+   - src/design-system/motion.ts
+   - src/design-system/breakpoints.ts
+   - src/design-system/index.ts
+3. Inspect the existing public Navbar.
+4. Inspect /agents and its AgentCard/AgentDetailModal implementation.
+5. Inspect existing routing.
+6. Reuse existing components wherever possible.
+7. Reuse the exact typography, spacing, borders, radii and colors already established.
+8. Do not duplicate components unnecessarily.
+9. Run the application and verify both pages after implementation.
+10. Run TypeScript/build validation and fix every error.
+
+============================================================
+PART 1 — THE VISUAL LANGUAGE
+============================================================
+
+The screenshots I provided establish the current Bhasini visual direction.
+
+The following characteristics MUST remain consistent.
+
+Bhasini is:
+
+  premium
+  editorial
+  warm
+  minimal
+  technical
+  Indian
+  AI-native
+  highly polished
+
+The UI should feel closer to:
+
+  Linear
+  Vercel
+  Stripe
+  modern AI infrastructure products
+
+than to:
+
+  generic Bootstrap dashboards
+  generic SaaS templates
+  noisy AI websites
+  colorful marketplace websites
+
+------------------------------------------------------------
+COLORS
+------------------------------------------------------------
+
+Primary canvas:
+
+  #F7F5F2
+
+Primary text:
+
+  #0D0D0D
+
+Secondary text:
+
+  #686868
+
+Muted:
+
+  #9A9A9A
+
+Border:
+
+  #E0DED9
+
+Subtle border:
+
+  #F0EFED
+
+White:
+
+  #FFFFFF
+
+Bhasini orange:
+
+  #FF6B35
+
+Orange hover:
+
+  #E85A25
+
+Pink:
+
+  #FF3CAC
+
+Success:
+
+  #22C55E
+
+The orange/pink accent must remain restrained.
+
+DO NOT make the whole page orange.
+
+------------------------------------------------------------
+TYPOGRAPHY
+------------------------------------------------------------
+
+HEADLINES:
+
+  Plus Jakarta Sans
+
+Use:
+
+  font-weight: 300–500
+  negative letter-spacing
+  large but elegant sizing
+
+BODY:
+
+  DM Sans
+
+Use:
+
+  14–18px
+  comfortable line-height
+  #686868
+
+TECHNICAL LABELS:
+
+  JetBrains Mono
+
+Use for:
+
+  section labels
+  navigation metadata
+  API labels
+  version numbers
+  status
+  language codes
+  endpoint names
+  breadcrumbs
+
+Example:
+
+  VOICES
+  DOCUMENTATION
+  API
+  GET /v1/voices
+  v2.1
+  UPDATED 2 MIN AGO
+
+These tiny mono labels are an important part of Bhasini's identity.
+
+------------------------------------------------------------
+BORDERS
+------------------------------------------------------------
+
+Prefer:
+
+  1px solid #E0DED9
+
+Avoid heavy shadows.
+
+Cards:
+
+  border-radius: 18px
+
+Large containers:
+
+  border-radius: 20–24px
+
+Pills/buttons:
+
+  border-radius: 9999px
+
+Inputs:
+
+  border-radius: 12px
+
+Do not randomly mix radii.
+
+============================================================
+PART 2 — PUBLIC NAVBAR
+============================================================
+
+Both /voices and /docs must use the EXISTING public Bhasini Navbar.
+
+Do not create a second unrelated navbar.
+
+The current public navigation is:
+
+Bhasini    BETA
+
+Products
+Agents
+Voices
+Pricing
+Docs
+
+Right:
+
+Log in
+Sign up
+
+Keep the exact visual language of the existing Agents page.
+
+Desktop:
+
+  max-width ≈ 1320px
+  centered
+  height ≈ 70px
+
+Logo:
+
+  Bhasini
+  bold
+  black
+
+  BETA
+  small gradient pill
+
+Active page:
+
+  thin orange underline
+
+For /voices:
+
+  Voices is active
+
+For /docs:
+
+  Docs is active
+
+The navbar must remain responsive.
+
+Mobile:
+
+  hamburger menu
+  logo
+  sign-up CTA
+
+Do not break the existing Agents page navigation.
+
+============================================================
+PART 3 — VOICES PAGE
+============================================================
+
+Route:
+
+  /voices
+
+File:
+
+  src/pages/VoicesPage.tsx
+
+If an equivalent existing structure exists, follow it instead.
+
+The page should feel like:
+
+"Bhasini's voice intelligence marketplace / voice library"
+
+but NOT like a generic ecommerce marketplace.
+
+The page should immediately communicate:
+
+  Indian voices
+  Indian languages
+  expressive speech
+  multilingual support
+  production readiness
+
+============================================================
+VOICES — HERO
+============================================================
+
+Page background:
+
+  #F7F5F2
+
+Container:
+
+  max-width: 1320px
+  margin: auto
+
+Padding:
+
+  70–90px 32px 40px
+
+Eyebrow:
+
+  "VOICE LIBRARY"
+
+Use:
+
+  JetBrains Mono
+  10px
+  uppercase
+  letter-spacing: 0.16em
+  #9A9A9A
+
+Main heading:
+
+  "Voices that sound like India."
+
+Use:
+
+  Plus Jakarta Sans
+  58–72px desktop
+  font-weight: 300–400
+  letter-spacing: -0.045em
+  line-height: 1.02
+
+The heading must be visually powerful but NOT huge for the sake of being huge.
+
+Supporting copy:
+
+  "Natural, expressive voices built for Indian languages, accents, and real conversations."
+
+DM Sans:
+
+  17–18px
+  max-width: 620px
+  line-height: 1.65
+  #686868
+
+------------------------------------------------------------
+HERO VOICE VISUAL
+------------------------------------------------------------
+
+Beside or beneath the hero copy, create a sophisticated voice visualization.
+
+Do NOT use stock photography.
+
+Use CSS/SVG.
+
+Concept:
+
+  large soft gradient orb
+  subtle waveform
+  small frequency bars
+  voice metadata
+
+Example:
+
+          ●
+       soft orb
+
+  ──╱╲╱╲╱╲╱╲──
+
+  AAROHI
+  HINDI · FEMALE
+  NATURAL / WARM
+
+The orb can use:
+
+  radial-gradient(
+    circle at 35% 30%,
+    rgba(255,255,255,.65),
+    transparent 35%
+  ),
+  linear-gradient(
+    135deg,
+    #FF6B35,
+    #FF3CAC
+  )
+
+Keep it subtle and premium.
+
+No giant 3D blobs.
+
+============================================================
+PART 4 — VOICE SEARCH + FILTER SYSTEM
+============================================================
+
+Below hero:
+
+Create a horizontal control area.
+
+LEFT:
+
+Search input:
+
+  "Search voices..."
+
+Icon:
+
+  Search
+
+Width:
+
+  360–420px
+
+Height:
+
+  48px
+
+White background.
+
+Border:
+
+  #E0DED9
+
+Radius:
+
+  9999px
+
+RIGHT / BELOW:
+
+Filter pills:
+
+  All
+  Hindi
+  English
+  Tamil
+  Telugu
+  Marathi
+  Bengali
+  Punjabi
+  Kannada
+  Malayalam
+
+Active:
+
+  black background
+  white text
+
+Inactive:
+
+  white
+  border
+
+On smaller screens:
+
+  horizontal scrolling filter row
+
+No ugly select dropdowns.
+
+------------------------------------------------------------
+VOICE FILTERS
+------------------------------------------------------------
+
+Add compact filters:
+
+Gender:
+  All
+  Female
+  Male
+
+Style:
+  Warm
+  Professional
+  Conversational
+  Energetic
+  Calm
+
+Use pill controls.
+
+The filtering MUST actually work.
+
+Typing in search should filter the displayed voices.
+
+Language filter must work.
+
+Style/gender filters must work.
+
+Do not create controls that do nothing.
+
+============================================================
+PART 5 — FEATURED VOICES
+============================================================
+
+Section heading:
+
+  "Featured voices"
+
+Subtext:
+
+  "Our most natural voices for production conversations."
+
+Right:
+
+  "View all →"
+
+Create a premium featured layout.
+
+Use 3 large cards.
+
+------------------------------------------------------------
+VOICE CARD
+------------------------------------------------------------
+
+Each card:
+
+  background: white
+  border: 1px solid #E0DED9
+  border-radius: 20px
+  padding: 24px
+
+Top:
+
+large gradient voice orb.
+
+Different gradient per voice.
+
+Do NOT use random colors excessively.
+
+Then:
+
+Name:
+
+  Aarohi
+
+Title:
+
+  "Warm Hindi conversationalist"
+
+Metadata:
+
+  HINDI
+  FEMALE
+  WARM
+
+Use tiny mono labels.
+
+Description:
+
+  "A warm, naturally paced voice designed for customer conversations and assistants."
+
+------------------------------------------------------------
+VOICE PLAYER
+------------------------------------------------------------
+
+Every voice card MUST have an interactive sample player.
+
+Structure:
+
+  circular play button
+
+  waveform
+
+  duration
+
+  "Preview"
+
+Click:
+
+  play/pause state changes
+
+Since there may not be an audio backend, create a polished simulated preview interaction.
+
+Do NOT claim actual audio is playing if no audio asset exists.
+
+If existing audio assets are present in the project, use them.
+
+If no audio exists:
+
+  animate waveform
+  change button state
+  show:
+    "Preview simulation"
+
+The interaction should still feel real.
+
+------------------------------------------------------------
+VOICE CARD FOOTER
+------------------------------------------------------------
+
+Example:
+
+  Hindi
+  English
+  Hinglish
+
+Then:
+
+  "Use voice →"
+
+This should navigate to the appropriate voice/agent creation flow if one exists.
+
+If no destination exists, create a clean placeholder route rather than a dead button.
+
+============================================================
+PART 6 — VOICE LIBRARY GRID
+============================================================
+
+Section:
+
+  "Explore all voices"
+
+Show count:
+
+  "24 voices"
+
+Use a 3-column desktop grid.
+
+Cards should be slightly more compact than Featured Voices.
+
+Create realistic voice data.
+
+At minimum:
+
+1.
+  Aarohi
+  Hindi
+  Female
+  Warm
+
+2.
+  Kabir
+  Hindi
+  Male
+  Professional
+
+3.
+  Meera
+  Tamil
+  Female
+  Conversational
+
+4.
+  Arjun
+  English / Hinglish
+  Male
+  Energetic
+
+5.
+  Kavya
+  Telugu
+  Female
+  Warm
+
+6.
+  Rohan
+  Marathi
+  Male
+  Professional
+
+7.
+  Ananya
+  Bengali
+  Female
+  Calm
+
+8.
+  Harpreet
+  Punjabi
+  Male
+  Conversational
+
+9.
+  Nisha
+  Kannada
+  Female
+  Warm
+
+10.
+  Vikram
+  Malayalam
+  Male
+  Professional
+
+Use 10–12 total voices.
+
+Do not make every card identical in copy.
+
+------------------------------------------------------------
+VOICE CARD MICRO DETAILS
+------------------------------------------------------------
+
+Top-right:
+
+  "NEW"
+
+or
+
+  "POPULAR"
+
+or
+
+  "BETA"
+
+Only where appropriate.
+
+Status:
+
+  ● Available
+
+Language chips.
+
+Waveform.
+
+Voice style.
+
+Small technical information:
+
+  LATENCY
+  ~320ms
+
+  QUALITY
+  98%
+
+These should be subtle.
+
+============================================================
+PART 7 — LANGUAGE COVERAGE
+============================================================
+
+After the voice grid, create a strong editorial section.
+
+Eyebrow:
+
+  "BUILT FOR BHARAT"
+
+Heading:
+
+  "One platform. India's many voices."
+
+Supporting text:
+
+  "Design conversations that move naturally across languages, regions and accents."
+
+Create a language matrix.
+
+Languages:
+
+  Hindi
+  Bengali
+  Telugu
+  Marathi
+  Tamil
+  Gujarati
+  Urdu
+  Kannada
+  Odia
+  Malayalam
+  Punjabi
+  Assamese
+
+Each language item:
+
+  language name
+  native script
+  number of voices
+  availability indicator
+
+Example:
+
+Hindi
+हिन्दी
+8 voices
+● Available
+
+Tamil
+தமிழ்
+4 voices
+● Available
+
+Telugu
+తెలుగు
+4 voices
+● Available
+
+Use native scripts correctly.
+
+This section should visually communicate multilingual depth.
+
+------------------------------------------------------------
+LANGUAGE SWITCH DEMO
+------------------------------------------------------------
+
+Create a small interactive demo.
+
+Header:
+
+  "One agent. Multiple languages."
+
+Display:
+
+  HINDI
+  ENGLISH
+  TAMIL
+
+Sample:
+
+Hindi:
+  "Namaste, main aapki kaise madad kar sakti hoon?"
+
+English:
+  "Hello, how can I help you today?"
+
+Tamil:
+  "வணக்கம், நான் உங்களுக்கு எப்படி உதவலாம்?"
+
+Clicking language changes the displayed sample.
+
+Add animated waveform.
+
+This is important because multilingual voice is the core product identity.
+
+============================================================
+PART 8 — VOICE DETAIL DRAWER
+============================================================
+
+Clicking a voice card should open a polished detail modal/drawer.
+
+Reuse the existing AgentDetailModal visual language where possible.
+
+Do NOT create a totally different modal.
+
+Header:
+
+  large voice orb
+
+  Aarohi
+
+  Warm Hindi conversationalist
+
+Metadata:
+
+  Female
+  Hindi
+  Warm
+
+Stats:
+
+  <1s response
+  98% quality
+  12k+ conversations
+
+Sections:
+
+  "Speaks"
+
+  Hindi
+  English
+  Hinglish
+
+"Voice character"
+
+  Warm
+  Natural
+  Conversational
+
+"Best for"
+
+  Customer support
+  Healthcare
+  Banking
+  Assistants
+
+Voice preview player.
+
+CTA:
+
+  "Use this voice"
+
+Close button.
+
+The modal must be responsive.
+
+============================================================
+PART 9 — VOICES PAGE FINAL CTA
+============================================================
+
+At the bottom:
+
+Dark premium CTA section.
+
+Background:
+
+  #0D0D0D
+
+Border radius:
+
+  24px
+
+Padding:
+
+  64px
+
+Heading:
+
+  "Give your agent a voice."
+
+White.
+
+Subtext:
+
+  "Choose a voice, connect a language, and start building."
+
+Buttons:
+
+  "Create an agent"
+  "Explore agents"
+
+Primary:
+
+  white background
+  black text
+
+Secondary:
+
+  transparent
+  white border
+
+Add a subtle orange/pink glow behind the section.
+
+Very subtle.
+
+============================================================
+PART 10 — DOCUMENTATION PAGE
+============================================================
+
+Route:
+
+  /docs
+
+File:
+
+  src/pages/DocsPage.tsx
+
+This page is extremely important.
+
+It should NOT look like a generic markdown blog.
+
+It should feel like:
+
+  Vercel Docs
+  Stripe Docs
+  Linear Docs
+  modern AI API documentation
+
+while maintaining Bhasini's warm editorial design language.
+
+The documentation should be usable.
+
+Users should be able to:
+
+  search
+  navigate sections
+  read documentation
+  copy code
+  switch pages
+  see active navigation
+  use API examples
+
+============================================================
+PART 11 — DOCS LAYOUT
+============================================================
+
+Desktop:
+
+Three-column layout.
+
+LEFT:
+
+  230px
+
+CENTER:
+
+  minmax(500px, 760px)
+
+RIGHT:
+
+  240px
+
+Example:
+
+┌──────────────┬───────────────────────────┬─────────────┐
+│ Docs nav     │ Documentation content     │ On this page│
+│              │                           │             │
+│ Introduction │                           │ Overview    │
+│ Quickstart   │                           │ Setup       │
+│ Agents       │                           │ API         │
+│ Voices       │                           │ Response    │
+│ Languages    │                           │             │
+│ API          │                           │             │
+│ SDKs         │                           │             │
+└──────────────┴───────────────────────────┴─────────────┘
+
+Desktop navigation should remain sticky.
+
+Mobile:
+
+  top search
+  section dropdown
+  content
+  on-this-page collapsible
+
+Never allow the documentation to become unusable on mobile.
+
+============================================================
+PART 12 — DOCS HEADER
+============================================================
+
+Top navbar:
+
+Reuse existing public navbar.
+
+Below:
+
+Docs-specific header.
+
+Breadcrumb:
+
+  DOCS / GETTING STARTED
+
+Mono:
+
+  10px
+  uppercase
+  letter-spacing 0.14em
+
+H1:
+
+  "Build with Bhasini."
+
+Plus Jakarta Sans:
+
+  48–56px
+  weight 300–400
+
+Subtext:
+
+  "Everything you need to build multilingual voice agents for India."
+
+Then search.
+
+Large documentation search:
+
+  "Search documentation..."
+
+Keyboard shortcut:
+
+  ⌘ K
+
+or
+
+  Ctrl K
+
+Search should actually work.
+
+At minimum:
+
+  filter/search documentation sections
+
+============================================================
+PART 13 — DOCS LEFT SIDEBAR
+============================================================
+
+Sidebar:
+
+BACKGROUND:
+  #F7F5F2
+
+border-right:
+
+  1px solid #E0DED9
+
+Sections:
+
+GETTING STARTED
+
+  Introduction
+  Quickstart
+  Create your first agent
+
+BUILD
+
+  Agents
+  Voices
+  Languages
+  Conversations
+
+API
+
+  Authentication
+  Agents API
+  Calls API
+  Voices API
+  Webhooks
+
+SDKs
+
+  JavaScript
+  Python
+  REST
+
+GUIDES
+
+  Multilingual agents
+  Voice configuration
+  Production checklist
+
+RESOURCES
+
+  Changelog
+  Status
+  Support
+
+Each section title:
+
+  JetBrains Mono
+  9px
+  uppercase
+  #9A9A9A
+
+Navigation:
+
+  DM Sans
+  13px
+
+Active:
+
+  black text
+  tiny saffron indicator
+  subtle background #FFFFFF
+
+Hover:
+
+  background #F0EFED
+
+============================================================
+PART 14 — DOCUMENTATION CONTENT
+============================================================
+
+Create REALISTIC documentation content.
+
+Do not fill pages with lorem ipsum.
+
+The content should describe Bhasini's actual conceptual product.
+
+------------------------------------------------------------
+INTRODUCTION
+------------------------------------------------------------
+
+Title:
+
+  "Introduction"
+
+Opening:
+
+  "Build voice agents that understand the languages, accents and conversational patterns of India."
+
+Explain:
+
+  Bhasini provides infrastructure for building multilingual voice agents.
+
+Concepts:
+
+  Agents
+  Voices
+  Languages
+  Conversations
+  Evaluations
+
+Add a small architecture diagram using HTML/CSS/SVG:
+
+User
+ ↓
+Voice Agent
+ ↓
+Speech → Language → Reasoning → Speech
+ ↓
+Response
+
+Keep it minimal.
+
+------------------------------------------------------------
+QUICKSTART
+------------------------------------------------------------
+
+Title:
+
+  "Quickstart"
+
+Sections:
+
+  1. Create an account
+  2. Create a voice agent
+  3. Choose a voice
+  4. Select languages
+  5. Configure instructions
+  6. Test the agent
+  7. Deploy
+
+Add code blocks.
+
+Example:
+
+```bash
+npm install @bhasini/sdk
+
+Then:
+
+import { Bhasini } from "@bhasini/sdk";
+
+const bhasini = new Bhasini({
+  apiKey: process.env.BHASINI_API_KEY
+});
+
+const agent = await bhasini.agents.create({
+  name: "Support Agent",
+  languages: ["hi", "en"],
+  voice: "aarohi"
+});
+
+Use syntax highlighting styling.
+
+DO NOT claim these APIs are connected to a real backend unless they already exist.
+
+If these are conceptual examples, label them appropriately.
+
+AUTHENTICATION
+
+Documentation page:
+
+"Authentication"
+
+Explain API keys conceptually.
+
+Example:
+
+curl https://api.bhasini.ai/v1/agents \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+Code block features:
+
+copy button
+language label
+line numbers for larger examples
+
+Copy button MUST work.
+
+On click:
+
+"Copied"
+
+then revert.
+
+============================================================
+PART 15 — API REFERENCE
+
+Create a polished API reference section.
+
+Navigation:
+
+Agents
+Voices
+Calls
+Evaluations
+
+Endpoint example:
+
+GET
+
+/v1/voices
+
+Use a method badge:
+
+GET
+
+green or subtle accent.
+
+Endpoint:
+
+/v1/voices
+
+Description:
+
+"Returns voices available for your workspace."
+
+Example request.
+
+Example response:
+
+{
+  "data": [
     {
-      id: 'free',
-      name: 'Free',
-      badge: undefined,
-      monthlyPrice: 0,
-      annualPrice: 0,
-      description: 'Perfect for exploring Bhasini and building your first voice agent.',
-      cta: 'Get started free',
-      ctaVariant: 'ghost',
-      highlighted: false,
-      limits: {
-        calls: '500 calls/month',
-        languages: '3 languages',
-        latency: 'Standard',
-        voices: '10 voices',
-      },
-      features: [
-        { text: '500 voice agent calls', included: true },
-        { text: '3 Indian languages', included: true },
-        { text: 'BhasiniCreative basic access', included: true },
-        { text: 'Community support', included: true },
-        { text: 'API access', included: true },
-        { text: 'Custom voice cloning', included: false },
-        { text: 'Priority latency (<800ms)', included: false },
-        { text: 'Analytics dashboard', included: false },
-        { text: 'Phone number deployment', included: false },
-        { text: 'WhatsApp integration', included: false },
-      ],
-    },
-    {
-      id: 'starter',
-      name: 'Starter',
-      badge: undefined,
-      monthlyPrice: 999,
-      annualPrice: 799,
-      description: 'For indie developers and small teams building production agents.',
-      cta: 'Start building',
-      ctaVariant: 'ghost',
-      highlighted: false,
-      limits: {
-        calls: '5,000 calls/month',
-        languages: '5 languages',
-        latency: '< 1s',
-        voices: '50 voices',
-      },
-      features: [
-        { text: '5,000 voice agent calls', included: true },
-        { text: '5 Indian languages', included: true },
-        { text: 'BhasiniCreative full access', included: true },
-        { text: 'Email support', included: true },
-        { text: 'API access + webhooks', included: true },
-        { text: 'Custom voice cloning', included: true, note: '3 voices' },
-        { text: 'Priority latency (<800ms)', included: false },
-        { text: 'Analytics dashboard', included: true },
-        { text: 'Phone number deployment', included: false },
-        { text: 'WhatsApp integration', included: false },
-      ],
-    },
-    {
-      id: 'growth',
-      name: 'Growth',
-      badge: 'Most Popular',
-      monthlyPrice: 4999,
-      annualPrice: 3999,
-      description: 'For growing startups deploying agents at scale across India.',
-      cta: 'Start free trial',
-      ctaVariant: 'primary',
-      highlighted: true,
-      limits: {
-        calls: '50,000 calls/month',
-        languages: '8+ languages',
-        latency: '< 800ms',
-        voices: 'Unlimited',
-      },
-      features: [
-        { text: '50,000 voice agent calls', included: true },
-        { text: 'All 8+ Indian languages', included: true },
-        { text: 'BhasiniCreative + BhasiniAgents', included: true },
-        { text: 'Priority support + Slack', included: true },
-        { text: 'Full API + advanced webhooks', included: true },
-        { text: 'Custom voice cloning', included: true, note: 'Unlimited' },
-        { text: 'Flash latency (< 800ms)', included: true },
-        { text: 'Advanced analytics + eval kit', included: true },
-        { text: 'Phone number deployment', included: true, note: '5 numbers' },
-        { text: 'WhatsApp integration', included: true },
-      ],
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      badge: undefined,
-      monthlyPrice: null,
-      annualPrice: null,
-      description: 'Custom infrastructure for large enterprises, banks, and governments.',
-      cta: 'Talk to sales',
-      ctaVariant: 'ghost',
-      highlighted: false,
-      limits: {
-        calls: 'Unlimited',
-        languages: 'All + custom',
-        latency: 'Ultra-low SLA',
-        voices: 'Custom models',
-      },
-      features: [
-        { text: 'Unlimited calls + SLA guarantee', included: true },
-        { text: 'All languages + custom dialect', included: true },
-        { text: 'Dedicated infrastructure', included: true },
-        { text: '24/7 dedicated support', included: true },
-        { text: 'Custom API + on-premise', included: true },
-        { text: 'Custom voice model training', included: true },
-        { text: 'Sub-500ms guaranteed latency', included: true },
-        { text: 'Enterprise analytics + SOC2', included: true },
-        { text: 'Unlimited phone numbers', included: true },
-        { text: 'WhatsApp + all channels', included: true },
-      ],
-    },
+      "id": "voice_aarohi",
+      "name": "Aarohi",
+      "language": "hi-IN",
+      "style": "warm"
+    }
   ]
+}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PAGE LAYOUT:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Use a dark code block.
 
-OUTER:
-  padding-top 64px (nav height)
-  background #F7F5F2
-  min-height 100vh
+Dark code blocks:
 
-SECTION 1 — PAGE HEADER:
-  max-width 1280px, margin 0 auto
-  padding 80px 32px 64px
-  text-align center
+#0D0D0D
 
-  Eyebrow label:
-    display inline-flex, align-items center, gap 8px
-    padding 5px 16px 5px 8px
-    background rgba(255,107,53,0.08)
-    border 1px solid rgba(255,107,53,0.18)
-    border-radius 9999px
-    margin-bottom 24px
-    
-    Dot: 7px, bg #FF6B35, pulsing animation
-    Text: "Simple, transparent pricing"
-      font-family 'DM Sans', font-size 13px
-      font-weight 600, color #FF6B35
+border-radius:
 
-  H1:
-    font-family 'Plus Jakarta Sans'
-    font-size clamp(40px, 6vw, 72px)
-    font-weight 300
-    letter-spacing -0.03em
-    color #0D0D0D
-    line-height 1.05
-    margin-bottom 20px
-    Text: "Pay as you grow"
+14px
 
-  Subtitle:
-    font-family 'DM Sans'
-    font-size 18px, font-weight 300
-    color #6B6B6B, line-height 1.65
-    max-width 480px, margin 0 auto 40px
+padding:
 
-  BILLING TOGGLE:
-    display inline-flex
-    background #EFEFED
-    border-radius 9999px
-    padding 4px
-    gap 2px
-    
-    Each button:
-      padding 10px 24px
-      border-radius 9999px
-      border none, cursor pointer
-      font-family 'DM Sans', font-size 14px
-      transition all 200ms ease
-      position relative
-      
-      Active:
-        background white
-        color #0D0D0D, font-weight 600
-        box-shadow 0 1px 4px rgba(0,0,0,0.08)
-      
-      Inactive:
-        background transparent
-        color #6B6B6B, font-weight 400
-    
-    Annual button has badge:
-      After the text "Annual", small pill:
-        margin-left 6px
-        background linear-gradient(90deg, #FF6B35, #FF3CAC)
-        color white
-        font-size 10px, font-weight 700
-        padding 2px 8px, border-radius 9999px
-        text: "Save 20%"
+20px
 
-SECTION 2 — PRICING CARDS GRID:
-  max-width 1280px, margin 0 auto
-  padding 0 32px 80px
-  display grid
-  grid-template-columns repeat(4, 1fr)
-  gap 16px
-  align-items start
-  
-  Below 1024px: grid-template-columns repeat(2, 1fr)
-  Below 640px: grid-template-columns 1fr
+Text:
 
-  Each PricingCard (motion.div):
-    framer-motion:
-      initial: opacity 0, y 24
-      animate: opacity 1, y 0
-      transition: duration 0.5, delay index*0.08
-    
-    onMouseEnter: setHoveredTier(tier.id)
-    onMouseLeave: setHoveredTier(null)
-    
-    NON-HIGHLIGHTED CARD STYLE:
-      background white
-      border 1px solid #E0DED9
-      border-radius 24px
-      padding 28px
-      position relative
-      transition all 250ms ease
-      
-      When hovered:
-        border-color #C8C5C0
-        box-shadow 0 8px 32px rgba(0,0,0,0.08)
-        transform translateY(-3px)
-    
-    HIGHLIGHTED CARD (Growth tier) STYLE:
-      background #0D0D0D
-      border 1px solid #0D0D0D
-      border-radius 24px
-      padding 28px
-      position relative
-      
-      All text inside: white versions
-      transform: translateY(-8px) (elevated above others)
-      box-shadow 0 24px 64px rgba(0,0,0,0.20)
-      
-      When hovered: transform translateY(-12px)
+JetBrains Mono
 
-    CARD HEADER:
-      margin-bottom 24px
-      
-      Top row (tier name + badge):
-        display flex, align-items center, gap 10px
-        margin-bottom 12px
-        
-        Tier name:
-          font-family 'Plus Jakarta Sans'
-          font-size 18px, font-weight 500
-          color: white if highlighted, #0D0D0D if not
-          letter-spacing -0.01em
-        
-        Badge (if exists — "Most Popular"):
-          padding 3px 10px
-          background rgba(255,107,53,1)
-          color white
-          font-size 10px, font-weight 700
-          border-radius 9999px
-          font-family 'DM Sans'
-          letter-spacing 0.03em
-      
-      PRICE DISPLAY:
-        margin-bottom 10px
-        
-        For FREE tier:
-          Large "₹0"
-            font-family 'Plus Jakarta Sans'
-            font-size 52px, font-weight 300
-            color: white if highlighted, #0D0D0D if not
-            letter-spacing -0.04em
-            line-height 1
-          
-          Below: "Free forever"
-            font-size 13px, color #9E9E9E (or rgba(255,255,255,0.5))
-        
-        For PAID tiers (monthly/annual toggle):
-          AnimatePresence mode="wait" key={billing}:
-            motion.div:
-              initial: opacity 0, y 8
-              animate: opacity 1, y 0
-              exit: opacity 0, y -8
-              transition: duration 0.2
-          
-          Price row:
-            display flex, align-items baseline, gap 4px
-            
-            Currency symbol "₹":
-              font-family 'Plus Jakarta Sans'
-              font-size 22px, font-weight 400
-              color #FF6B35 if not highlighted
-              color #FF6B35 if highlighted (stays orange)
-            
-            Amount:
-              font-family 'Plus Jakarta Sans'
-              font-size 52px, font-weight 300
-              letter-spacing -0.04em, line-height 1
-              color: white if highlighted, #0D0D0D if not
-              text: billing==='monthly' ? tier.monthlyPrice : tier.annualPrice
-            
-            Per month:
-              font-size 13px, font-weight 400
-              color: rgba(255,255,255,0.5) if highlighted, #9E9E9E if not
-              align-self flex-end, padding-bottom 8px
-              text: "/mo"
-          
-          If annual billing, show savings note:
-            font-size 11px, color: rgba(255,107,53,0.9)
-            text: "Save ₹{(tier.monthlyPrice - tier.annualPrice) * 12}/yr"
-        
-        For ENTERPRISE tier:
-          Large text "Custom"
-            font-family 'Plus Jakarta Sans'
-            font-size 52px, font-weight 300
-            letter-spacing -0.04em, color: white if h, #0D0D0D if not
-          Below: "Contact for pricing"
-            font-size 13px, color #9E9E9E or rgba(255,255,255,0.5)
-      
-      Description:
-        font-family 'DM Sans'
-        font-size 13px, font-weight 300
-        line-height 1.6
-        color: rgba(255,255,255,0.65) if highlighted, #6B6B6B if not
+13px.
 
-    LIMIT PILLS (4 quick stats):
-      display grid, grid-template-columns 1fr 1fr
-      gap 6px, margin-bottom 24px
-      
-      Each limit pill:
-        padding 8px 10px
-        border-radius 10px
-        background: rgba(255,255,255,0.07) if highlighted
-                    #FAFAFA if not
-        border: 1px solid rgba(255,255,255,0.10) if highlighted
-                1px solid #F0EFED if not
-        
-        Value:
-          font-family 'DM Sans', font-size 11px, font-weight 700
-          color: white if highlighted, #0D0D0D if not
-          margin-bottom 1px
-        
-        Label:
-          font-family 'DM Sans', font-size 9px, font-weight 400
-          color: rgba(255,255,255,0.45) if highlighted, #9E9E9E if not
+API METHOD STYLING
 
-    CTA BUTTON:
-      width 100%, height 48px
-      border-radius 9999px
-      cursor pointer, border none
-      font-family 'DM Sans', font-size 14px, font-weight 600
-      margin-bottom 24px
-      transition all 200ms
-      
-      PRIMARY variant (Growth — white button on dark card):
-        background white, color #0D0D0D
-        hover: background rgba(255,255,255,0.90)
-      
-      GHOST variant (light cards):
-        background transparent
-        border 1.5px solid #E0DED9
-        color #0D0D0D
-        hover: border-color #0D0D0D
-      
-      ENTERPRISE ghost (dark card if enterprise is dark):
-        background transparent
-        border 1.5px solid rgba(255,255,255,0.25)
-        color white
-        hover: border-color white
-      
-      onClick:
-        Free/Starter/Growth → navigate('/signup')
-        Enterprise → scroll to #contact or navigate('/signup?plan=enterprise')
-      
-      framer-motion whileHover: scale 1.01
-      whileTap: scale 0.99
+GET:
 
-    DIVIDER:
-      height 1px
-      background: rgba(255,255,255,0.08) if highlighted, #F0EFED if not
-      margin-bottom 24px
+subtle green
 
-    FEATURES LIST:
-      display flex, flex-direction column, gap 12px
-      
-      Section label: "What's included"
-        font-family 'JetBrains Mono', font-size 9px
-        letter-spacing 0.16em, text-transform uppercase
-        color: rgba(255,255,255,0.35) if highlighted, #9E9E9E if not
-        margin-bottom 4px
-      
-      Each feature row:
-        display flex, align-items flex-start, gap 10px
-        
-        Icon (16px × 16px circle):
-          flex-shrink 0, margin-top 1px
-          
-          INCLUDED:
-            background rgba(34,197,94,0.12)
-            border 1px solid rgba(34,197,94,0.20)
-            display flex, align-items center, justify-content center
-            <Check size={9}/> color #22C55E
-          
-          NOT INCLUDED:
-            background rgba(0,0,0,0.04) or rgba(255,255,255,0.06)
-            <X size={9}/> color: #C8C5C0 or rgba(255,255,255,0.25)
-        
-        Text:
-          font-family 'DM Sans', font-size 13px, font-weight 400
-          line-height 1.4
-          color: when included: white or #2A2A2A
-          color: when not: rgba(255,255,255,0.35) or #B0B0B0
-          
-          If has note:
-            After main text, small inline badge:
-              font-size 10px, font-weight 700
-              padding 1px 7px, border-radius 9999px
-              background rgba(255,107,53,0.12)
-              color #FF6B35
-              margin-left 6px
-              text: feature.note
+POST:
 
-SECTION 3 — USAGE TABLE:
-  max-width 1280px, margin 0 auto
-  padding 0 32px 80px
+saffron/orange
 
-  Heading:
-    font-family 'Plus Jakarta Sans'
-    font-size clamp(28px, 4vw, 40px)
-    font-weight 300, letter-spacing -0.02em
-    color #0D0D0D, margin-bottom 8px
-    text: "Compare all features"
-  
-  Subtext: "See exactly what you get with each plan."
-    font-size 16px, color #6B6B6B, font-weight 300
-    margin-bottom 40px
+PATCH:
 
-  TABLE:
-    width 100%, border-collapse separate, border-spacing 0
-    background white, border-radius 20px
-    overflow hidden
-    border 1px solid #E0DED9
-    
-    HEADER ROW:
-      background #FAFAFA
-      border-bottom 1px solid #E0DED9
-      
-      Columns: Feature | Free | Starter | Growth | Enterprise
-      
-      First header cell:
-        padding 20px 28px, text-align left
-        font-family 'JetBrains Mono', font-size 10px
-        letter-spacing 0.14em, color #9E9E9E, uppercase
-      
-      Plan name cells:
-        padding 20px 20px, text-align center
-        font-family 'Plus Jakarta Sans', font-size 15px
-        font-weight 500, color #0D0D0D
-        
-        Growth column header: color #FF6B35
-    
-    TABLE SECTIONS (grouped rows with section headers):
-      
-      Section header rows (full-width span):
-        background #F7F5F2
-        td colspan=5:
-          padding 12px 28px
-          font-family 'JetBrains Mono', font-size 9px
-          letter-spacing 0.16em, color #9E9E9E, uppercase
-      
-      Feature rows:
-        border-bottom 1px solid #F5F5F5
-        
-        First cell (feature name):
-          padding 16px 28px
-          font-family 'DM Sans', font-size 14px
-          font-weight 400, color #2A2A2A
-        
-        Value cells:
-          text-align center, padding 16px 20px
-          
-          If boolean: <Check size={16}/> green or <Minus size={16}/> gray
-          If text value: font-family 'DM Sans', font-size 13px, color #4A4A4A
-          
-          Growth column: font-weight 600
-        
-        Hover row: background #FAFAFA
-      
-      TABLE DATA:
-        Section: "Voice Agents"
-          Monthly calls: 500 | 5,000 | 50,000 | Unlimited
-          Languages: Hindi, English | +3 | All 8+ | All + custom
-          Latency: Standard | < 1s | < 800ms Flash | < 500ms
-          Phone deployment: ✗ | ✗ | 5 numbers | Unlimited
-          WhatsApp: ✗ | ✗ | ✓ | ✓
-          Outbound calling: ✗ | ✗ | ✓ | ✓
-        
-        Section: "Creative"
-          TTS characters: 10k/mo | 100k/mo | 1M/mo | Unlimited
-          Voice cloning: ✗ | 3 voices | Unlimited | Custom model
-          Music generation: Basic | ✓ | ✓ | ✓
-          Video synthesis: ✗ | ✗ | ✓ | ✓
-        
-        Section: "Platform"
-          API access: ✓ | ✓ | ✓ | ✓
-          Analytics: Basic | ✓ | Advanced | Enterprise
-          Eval kit: ✗ | ✗ | ✓ | ✓
-          Observatory: ✗ | ✗ | ✓ | ✓
-          SSO / SAML: ✗ | ✗ | ✗ | ✓
-          Audit logs: ✗ | ✗ | ✓ | ✓
-        
-        Section: "Support"
-          Community forum: ✓ | ✓ | ✓ | ✓
-          Email support: ✗ | ✓ | Priority | Dedicated
-          Slack channel: ✗ | ✗ | ✓ | ✓
-          SLA guarantee: ✗ | ✗ | 99.9% | 99.99%
-          Onboarding: ✗ | ✗ | ✗ | Custom
+blue
 
-SECTION 4 — FAQ:
-  max-width 720px, margin 0 auto
-  padding 0 32px 100px
+DELETE:
 
-  Heading: "Frequently asked"
-    font-family 'Plus Jakarta Sans'
-    font-size clamp(28px, 4vw, 40px)
-    font-weight 300, letter-spacing -0.02em
-    text-align center, margin-bottom 48px
+red
 
-  FAQ items (accordion):
-    State: const [openFaq, setOpenFaq] = useState<number|null>(null)
-    
-    const faqs = [
-      {
-        q: 'What counts as a "call"?',
-        a: 'One call = one complete voice conversation session. Whether it\'s 30 seconds or 30 minutes, it counts as one call. Concurrent calls on Growth+ are unlimited.'
-      },
-      {
-        q: 'Can I switch plans anytime?',
-        a: 'Yes. Upgrade immediately and get prorated credit. Downgrade takes effect at the next billing cycle. No lock-in contracts.'
-      },
-      {
-        q: 'Do you support all Indian languages?',
-        a: 'Free and Starter include Hindi, English, and Hinglish. Growth adds Tamil, Telugu, Marathi, Punjabi, and Haryanvi. Enterprise can add custom dialect models.'
-      },
-      {
-        q: 'What is the Eval Kit?',
-        a: 'The Eval Kit lets you test your agent\'s accuracy, latency, and conversation quality with simulated calls before going live. Available on Growth and Enterprise.'
-      },
-      {
-        q: 'Is there a free trial for Growth?',
-        a: 'Yes — 14-day free trial on Growth with no credit card required. All features included. Cancels automatically if you don\'t upgrade.'
-      },
-      {
-        q: 'How does voice cloning work?',
-        a: 'Upload 5+ minutes of clean audio. Our model trains a voice clone in under 2 hours. Starter gets 3 clones, Growth gets unlimited.'
-      },
-      {
-        q: 'What are the payment options?',
-        a: 'All major Indian payment methods: UPI, Razorpay, Net Banking, Credit/Debit cards. Invoices in INR. GST invoice available for business accounts.'
-      },
-    ]
-    
-    Each FAQ item:
-      border-bottom 1px solid #E0DED9
-      
-      Question row (clickable):
-        display flex, align-items center, justify-content space-between
-        padding 20px 0, cursor pointer
-        
-        Question text:
-          font-family 'DM Sans'
-          font-size 16px, font-weight 400
-          color #0D0D0D
-          hover: color #FF6B35
-          transition color 150ms
-        
-        Icon:
-          framer-motion rotate: openFaq===i ? 45 : 0
-          transition duration 0.25
-          <Plus size={18}/> color #9E9E9E
-          (rotates to X when open)
-        
-        onClick: setOpenFaq(openFaq === i ? null : i)
-      
-      Answer (AnimatePresence):
-        motion.div:
-          initial: height 0, opacity 0
-          animate: height 'auto', opacity 1
-          exit: height 0, opacity 0
-          transition: duration 0.3, ease [0.16,1,0.3,1]
-        
-        Overflow hidden
-        
-        Inner content: padding 0 0 20px:
-          font-family 'DM Sans'
-          font-size 15px, font-weight 300
-          line-height 1.7, color #6B6B6B
+Keep colors restrained.
 
-SECTION 5 — BOTTOM CTA BANNER:
-  background #0D0D0D
-  padding 80px 32px
-  text-align center
-  
-  Heading: "Start building for free today"
-    font-family 'Plus Jakarta Sans'
-    font-size clamp(32px, 5vw, 56px)
-    font-weight 300, letter-spacing -0.03em
-    color white, margin-bottom 16px
-  
-  Subtext: "No credit card. No lock-in. Deploy your first Hindi voice agent in minutes."
-    font-family 'DM Sans', font-size 16px, font-weight 300
-    color rgba(255,255,255,0.55), margin-bottom 40px
-  
-  Button row: display flex, gap 12px, justify-content center
-    
-    Button 1: "Get started free"
-      height 52px, padding 0 32px
-      background #FF6B35, color white
-      border none, border-radius 9999px
-      font-family 'DM Sans', font-size 15px, font-weight 600
-      cursor pointer
-      hover: background #E85A25
-      onClick: navigate('/signup')
-    
-    Button 2: "Talk to sales"
-      height 52px, padding 0 32px
-      background transparent
-      border 1.5px solid rgba(255,255,255,0.25)
-      color rgba(255,255,255,0.8), border-radius 9999px
-      font-family 'DM Sans', font-size 15px, font-weight 500
-      cursor pointer, hover: border-color white, color white
+============================================================
+PART 16 — RIGHT "ON THIS PAGE"
 
-════════════════════════════════════════════════════════════════
-PART B: LoginPage
-File: src/pages/AuthPage/LoginPage.tsx
-════════════════════════════════════════════════════════════════
+Sticky right column.
 
-FULL SCREEN SPLIT LAYOUT:
-  height 100vh, display flex, overflow hidden
+Header:
 
-LEFT PANEL (50% width, hidden below 768px):
-  background #0D0D0D
-  display flex, flex-direction column
-  justify-content space-between
-  padding 48px
-  position relative, overflow hidden
-  
-  BACKGROUND DECORATION:
-    Two large gradient orbs (position absolute, pointer-events none):
-    
-    Orb 1 (top-right area):
-      width 400px, height 400px, border-radius 50%
-      background radial-gradient(circle,
-        rgba(255,107,53,0.25) 0%, transparent 70%)
-      position absolute, top -100px, right -100px
-      filter blur(60px)
-    
-    Orb 2 (bottom-left area):
-      width 300px, height 300px, border-radius 50%
-      background radial-gradient(circle,
-        rgba(26,115,232,0.20) 0%, transparent 70%)
-      position absolute, bottom -80px, left -80px
-      filter blur(60px)
-  
-  TOP — Logo:
-    display flex, align-items center, gap 8px
-    
-    Logo text:
-      font-family 'Plus Jakarta Sans', font-size 20px
-      font-weight 800, color white, letter-spacing -0.02em
-      display flex, align-items center, gap 1px
-      
-      Pipe: color rgba(255,255,255,0.35), font-weight 400
-      "Bhasini": color white
-    
-    BETA badge: same saffron gradient pill as navbar
-  
-  MIDDLE — Hero quote:
-    flex 1, display flex, flex-direction column
-    justify-content center
-    
-    Large text (thin, elegant):
-      font-family 'Plus Jakarta Sans'
-      font-size clamp(28px, 3.5vw, 42px)
-      font-weight 300, letter-spacing -0.02em
-      color white, line-height 1.25
-      margin-bottom 24px
-      text: "Voice agents that\nunderstand India."
-      white-space pre-line
-    
-    Below: rotating Indian language display:
-      State: const [langIdx, setLangIdx] = useState(0)
-      setInterval 2500ms, cycles 0-6
-      
-      const langSamples = [
-        { lang: 'Hindi', text: 'नमस्ते! कैसे मदद करूँ?', script: 'Devanagari' },
-        { lang: 'Tamil', text: 'வணக்கம்! எப்படி உதவட்டுமா?', script: 'Tamil' },
-        { lang: 'Telugu', text: 'నమస్కారం! ఎలా సహాయం చేయాలి?', script: 'Telugu' },
-        { lang: 'Marathi', text: 'नमस्कार! कशी मदत करू?', script: 'Devanagari' },
-        { lang: 'Punjabi', text: 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਕਿਵੇਂ ਮਦਦ ਕਰਾਂ?', script: 'Gurmukhi' },
-        { lang: 'English', text: 'Hello! How can I help you today?', script: 'Latin' },
-        { lang: 'Hinglish', text: 'Namaste! Main aapki kaise help karu?', script: 'Mixed' },
-      ]
-      
-      AnimatePresence mode="wait" key={langIdx}:
-        motion.div:
-          initial: opacity 0, y 12
-          animate: opacity 1, y 0
-          exit: opacity 0, y -12
-          transition: duration 0.4
-        
-        Language tag:
-          font-family 'JetBrains Mono', font-size 9px
-          letter-spacing 0.18em, color rgba(255,107,53,0.7)
-          text-transform uppercase, margin-bottom 8px
-        
-        Sample text:
-          font-family 'DM Sans', font-size 18px, font-weight 300
-          color rgba(255,255,255,0.80), line-height 1.5
-          font-style italic
-    
-    Small stats row (margin-top 40px):
-      display flex, gap 32px
-      
-      { value: '8+', label: 'Languages' }
-      { value: '20+', label: 'Agent Types' }
-      { value: '77k+', label: 'Daily Calls' }
-      
-      Each stat:
-        value: font-family 'Plus Jakarta Sans', font-size 24px
-          font-weight 300, color white, letter-spacing -0.02em
-        label: font-family 'DM Sans', font-size 11px
-          color rgba(255,255,255,0.40), font-weight 400
-  
-  BOTTOM — testimonial:
-    padding 24px, background rgba(255,255,255,0.05)
-    border-radius 16px, border 1px solid rgba(255,255,255,0.08)
-    
-    Quote text:
-      font-family 'DM Sans', font-size 14px, font-weight 300
-      color rgba(255,255,255,0.70), line-height 1.6, margin-bottom 14px
-      text: '"Bhasini reduced our support call handling time by 68% with Hindi voice agents."'
-    
-    Attribution row:
-      display flex, align-items center, gap 10px
-      
-      Avatar circle:
-        width 32px, height 32px, border-radius 50%
-        background linear-gradient(135deg, #FF6B35, #FF3CAC)
-        display flex, align-items center, justify-content center
-        font-size 12px, font-weight 700, color white
-        text: "RS"
-      
-      Name + company:
-        Name: "Rahul Sharma" — font-size 13px, font-weight 500, color white
-        Company: "Razorpay Engineering" — font-size 11px,
-          color rgba(255,255,255,0.45)
+"ON THIS PAGE"
 
-RIGHT PANEL (50% width, 100% width on mobile):
-  background white
-  display flex, align-items center, justify-content center
-  padding 48px
-  overflow-y auto
-  
-  FORM CONTAINER:
-    width 100%, max-width 380px
-    
-    TOP SECTION:
-      margin-bottom 40px
-      
-      Welcome text:
-        font-family 'Plus Jakarta Sans'
-        font-size 28px, font-weight 300
-        letter-spacing -0.02em, color #0D0D0D
-        margin-bottom 8px
-        text: "Welcome back"
-      
-      Subtext:
-        font-family 'DM Sans', font-size 15px
-        font-weight 300, color #6B6B6B
-        text: "Sign in to your Bhasini account"
-      
-      Signup link (inline):
-        margin-top 6px
-        font-size 14px, color #9E9E9E
-        "Don't have an account? "
-        <Link to="/signup">
-          color #FF6B35, font-weight 500
-          hover: text-decoration underline
-          text: "Sign up free"
-    
-    GOOGLE AUTH BUTTON:
-      width 100%, height 48px
-      background white
-      border 1.5px solid #E0DED9
-      border-radius 9999px
-      display flex, align-items center, justify-content center, gap 10px
-      cursor pointer, font-family 'DM Sans'
-      font-size 14px, font-weight 500, color #0D0D0D
-      transition all 200ms
-      hover: border-color #C8C5C0, box-shadow 0 2px 8px rgba(0,0,0,0.06)
-      margin-bottom 24px
-      
-      Google "G" icon (inline SVG or colored G):
-        width 18px, height 18px
-        Use a simple colored G:
-          display inline-block, width 18px, height 18px
-          border-radius 50%, background #4285F4
-          (or just use emoji: 🌐 temporarily)
-        
-        Text: "Continue with Google"
+Items:
 
-    DIVIDER:
-      display flex, align-items center, gap 16px
-      margin-bottom 24px
-      
-      Lines: flex 1, height 1px, background #E0DED9
-      Text: "or"
-        font-family 'DM Sans', font-size 12px, color #9E9E9E
-        white-space nowrap
+Overview
+Installation
+Configuration
+Authentication
+Response
+Next steps
 
-    EMAIL FIELD:
-      margin-bottom 16px
-      
-      Label:
-        font-family 'DM Sans', font-size 12px, font-weight 500
-        color #4A4A4A, margin-bottom 6px, display block
-        text: "Email address"
-      
-      Input:
-        width 100%, height 48px
-        padding 0 16px
-        background white
-        border 1.5px solid #E0DED9
-        border-radius 12px
-        font-family 'DM Sans', font-size 15px, color #0D0D0D
-        outline none
-        transition all 200ms
-        
-        Focus: border-color #FF6B35,
-          box-shadow 0 0 0 3px rgba(255,107,53,0.12)
-        
-        placeholder color #C8C5C0
+Active section:
 
-    PASSWORD FIELD:
-      margin-bottom 8px
-      Same structure as email field
-      
-      Input type "password" with toggle:
-        position relative
-        
-        Toggle button (absolute right 14px, top 50% transform -50%):
-          background none, border none, cursor pointer
-          color #9E9E9E, hover color #4A4A4A
-          <Eye size={16}/> or <EyeOff size={16}/>
-          
-          State: const [showPassword, setShowPassword] = useState(false)
-          Input type: showPassword ? 'text' : 'password'
+#0D0D0D
 
-    FORGOT PASSWORD LINK:
-      text-align right, margin-bottom 24px
-      font-family 'DM Sans', font-size 13px
-      color #FF6B35, cursor pointer, hover underline
-      text: "Forgot password?"
+Inactive:
 
-    SUBMIT BUTTON:
-      width 100%, height 48px
-      background #0D0D0D, color white
-      border none, border-radius 9999px
-      font-family 'DM Sans', font-size 15px, font-weight 600
-      cursor pointer, transition all 200ms
-      
-      Loading state:
-        State: const [loading, setLoading] = useState(false)
-        onClick: setLoading(true), setTimeout 1500ms,
-          setLoading(false), navigate('/app/home')
-        
-        Loading: shows spinner + "Signing in..."
-        Normal: "Sign in"
-      
-      framer-motion whileHover: scale 1.01
-      whileTap: scale 0.99
-    
-    TERMS TEXT (below button):
-      margin-top 20px, text-align center
-      font-family 'DM Sans', font-size 11px
-      color #9E9E9E, line-height 1.6
-      "By signing in, you agree to our Terms of Service\nand Privacy Policy"
+#9A9A9A
 
-════════════════════════════════════════════════════════════════
-PART C: SignupPage
-File: src/pages/AuthPage/SignupPage.tsx
-════════════════════════════════════════════════════════════════
+When scrolling:
 
-SAME SPLIT LAYOUT as LoginPage.
-Left panel: identical (same dark panel, same orb animations,
-same language cycling, same stats, same testimonial).
+active heading updates
 
-RIGHT PANEL differences:
+Implement using:
 
-  Welcome text: "Create your account"
-  Subtext: "Start building Indian voice agents today."
-  Link: "Already have an account? " + Link to="/login" "Sign in"
+IntersectionObserver
 
-  FORM FIELDS (in order):
-    1. Full name field (same input style)
-       Label: "Full name", placeholder: "Dhruv Kumar"
-    
-    2. Email field — same as login
-    
-    3. Password field — same with show/hide toggle
-       Below input: password strength indicator:
-         4 segment bar (each 25% width, rounded)
-         
-         State: const [strength, setStrength] = useState(0)
-         On password change, calculate:
-           strength 0 (empty): all gray
-           strength 1 (< 6 chars): 1 segment red
-           strength 2 (6+ chars): 2 segments orange
-           strength 3 (has number or symbol): 3 segments yellow
-           strength 4 (8+ chars + number + symbol): 4 segments green
-         
-         Strength bar:
-           display flex, gap 4px, margin-top 8px
-           
-           Each segment:
-             flex 1, height 3px, border-radius 9999px
-             transition background 300ms
-             Colors: 0=>#EFEFED, 1=>#EF4444, 2=>#F59E0B, 3=>#F59E0B, 4=>#22C55E
-         
-         Strength label:
-           font-size 11px, margin-top 4px
-           colors match bar, font-family 'DM Sans'
-           text: ['', 'Too short', 'Weak', 'Fair', 'Strong']
-    
-    4. Plan selector (optional step):
-       Label: "Choose your plan"
-       
-       3 option cards in a row (Free / Starter / Growth):
-         Each card:
-           flex 1, padding 12px
-           border 1.5px solid (selected: #0D0D0D, not: #E0DED9)
-           border-radius 12px, cursor pointer
-           text-align center, transition all 200ms
-           
-           Plan name: font-size 13px, font-weight 600, color #0D0D0D
-           Price: font-size 11px, color #9E9E9E
-             Free: "₹0/mo" | Starter: "₹999/mo" | Growth: "₹4,999/mo"
-           
-           Selected: border-color #0D0D0D, background #FAFAFA
-           Unselected: hover border-color #C8C5C0
-       
-       State: const [selectedPlan, setSelectedPlan] = useState('free')
+if practical.
 
-  SUBMIT BUTTON:
-    text: "Create account"
-    onClick: same simulate as login → navigate('/app/home')
-  
-  GOOGLE BUTTON:
-    Same as login: "Sign up with Google"
-    (show ABOVE the form on signup, BELOW the divider after email)
-  
-  DIVIDER same as login
+Do not make it static if the implementation is straightforward.
 
-  BELOW BUTTON:
-    "By creating an account, you agree to our Terms of Service
-    and Privacy Policy. We'll send occasional product updates."
-    font-size 11px, color #9E9E9E, text-align center
-    margin-top 20px
+============================================================
+PART 17 — DOCS INTERACTIONS
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ALL IMPORTS:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Implement:
 
-PricingPage/index.tsx:
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Check, X, Plus, Minus } from 'lucide-react'
-import Navbar from '../../components/layout/Navbar'
+✓ Search documentation
+✓ Sidebar navigation
+✓ Active navigation state
+✓ Copy code buttons
+✓ Tabs where useful
+✓ Expand/collapse where useful
+✓ Anchor links
+✓ On-this-page tracking
+✓ Previous / next navigation
+✓ Responsive sidebar
+✓ Keyboard-friendly controls
 
-LoginPage.tsx + SignupPage.tsx:
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Eye, EyeOff } from 'lucide-react'
+CODE TABS
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ACCEPTANCE CRITERIA:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+For SDK examples:
 
-PRICING PAGE:
-✓ 4 tier cards render, Growth card is elevated + dark
-✓ Monthly/Annual toggle animates price smoothly
-✓ Annual shows "Save 20%" badge + savings amount
-✓ Currency shows ₹ in saffron color
-✓ Limit pills grid (2×2) in each card
-✓ Feature rows: check (green) or X (gray) icons
-✓ Feature notes shown as orange pill badges
-✓ Comparison table renders with section groupings
-✓ FAQ accordion opens/closes smoothly
-✓ Bottom dark CTA banner with saffron button
-✓ All CTAs navigate correctly
+JavaScript
+Python
+cURL
 
-LOGIN PAGE:
-✓ Full screen split: dark left + white right
-✓ Dark left panel: logo, rotating language samples, stats, testimonial
-✓ Language samples cycle every 2.5s with fade animation
-✓ Google button styled, email + password fields
-✓ Password show/hide toggle works
-✓ Forgot password link present
-✓ Loading spinner on submit for 1.5s
-✓ Redirects to /app/home after login
+Clicking a tab changes code.
 
-SIGNUP PAGE:
-✓ Same split layout as login
-✓ Full name field added
-✓ Password strength bar updates live as user types
-✓ Plan selector: 3 cards, selected shows dark border
-✓ Google signup button present
-✓ Redirects to /app/home after signup
-✓ Zero TypeScript errors on all 3 files
+Example:
+
+JavaScript:
+
+const agent = await bhasini.agents.create({
+  name: "Support"
+});
+
+Python:
+
+agent = bhasini.agents.create(
+    name="Support"
+)
+
+cURL:
+
+curl -X POST https://api.bhasini.ai/v1/agents
+
+Again:
+
+Do not imply these are live API calls if no backend exists.
+
+============================================================
+PART 18 — DOCS CALLOUTS
+
+Create reusable documentation callouts.
+
+INFO:
+
+"Bhasini automatically detects the language being spoken when multilingual mode is enabled."
+
+WARNING:
+
+"Never expose your API key in client-side browser code."
+
+TIP:
+
+"Use the Evaluation Kit before deploying an agent to production."
+
+Visual style:
+
+white background
+subtle border
+left accent line
+
+Do not use giant colorful boxes.
+
+============================================================
+PART 19 — DOCS CODE BLOCK DESIGN
+
+Code blocks should be one of the strongest visual elements.
+
+Dark surface:
+
+#0D0D0D
+
+Top bar:
+
+JavaScript
+
+Copy
+
+Tiny mono typography.
+
+Use:
+
+padding 16px 20px
+
+border-radius 14px
+
+overflow-x auto
+
+Syntax colors can be subtle.
+
+Do not use rainbow syntax highlighting.
+
+Keep it professional.
+
+============================================================
+PART 20 — DOCUMENTATION FOOTER
+
+At the end of every document:
+
+Previous:
+
+← Introduction
+
+Next:
+
+Quickstart →
+
+Then:
+
+"Still have questions?"
+
+Buttons:
+
+"Contact support"
+"Explore agents"
+
+Dark CTA.
+
+============================================================
+PART 21 — MOBILE DOCUMENTATION
+
+At:
+
+<900px
+
+Hide left/right persistent sidebars.
+
+Top:
+
+Docs
+Search
+Menu
+
+Click Menu:
+
+documentation navigation drawer.
+
+On-this-page:
+
+collapsible.
+
+Content:
+
+width 100%
+padding 20–24px
+
+Code blocks:
+
+horizontal scroll
+
+Tables:
+
+horizontal scroll if required.
+
+Never allow the entire page to horizontally overflow.
+
+============================================================
+PART 22 — MOTION
+
+Use the existing Bhasini motion system.
+
+Page entry:
+
+opacity 0 → 1
+y 8 → 0
+
+Duration:
+
+0.4–0.5s
+
+Voice cards:
+
+y -2 on hover
+
+Voice orb:
+
+extremely subtle floating motion
+
+Waveform:
+
+gentle animation
+
+Buttons:
+
+scale 1.01 on hover
+scale 0.99 on click
+
+Documentation:
+
+sidebar active state transition
+
+Do NOT over-animate.
+
+The product must feel calm and premium.
+
+============================================================
+PART 23 — RESPONSIVE VOICES PAGE
+
+Desktop:
+
+hero two-column
+3-column voice grid
+language matrix
+
+Tablet:
+
+hero stacked
+2-column voice grid
+
+Mobile:
+
+hero stacked
+one-column cards
+horizontal filter scrolling
+language matrix becomes 2 columns
+voice modal becomes full-screen drawer
+
+No horizontal overflow.
+
+============================================================
+PART 24 — DATA ARCHITECTURE
+
+Keep data separated.
+
+Suggested:
+
+src/data/
+voices.ts
+docs.ts
+
+Types:
+
+interface Voice {
+  id: string;
+  name: string;
+  description: string;
+  languages: string[];
+  gender: "female" | "male";
+  style: "warm" | "professional" | "conversational" | "energetic" | "calm";
+  latency: string;
+  quality: number;
+  featured?: boolean;
+  popular?: boolean;
+  new?: boolean;
+}
+
+Documentation:
+
+interface DocPage {
+  slug: string;
+  title: string;
+  section: string;
+  description: string;
+}
+
+Do not hardcode large datasets directly into JSX.
+
+============================================================
+PART 25 — COMPONENT ARCHITECTURE
+
+Reuse existing components.
+
+If components don't exist, create reusable ones:
+
+Voices:
+
+VoiceOrb
+VoiceCard
+VoicePlayer
+VoiceFilters
+VoiceDetailModal
+LanguageMatrix
+LanguageDemo
+
+Docs:
+
+DocsLayout
+DocsSidebar
+DocsSearch
+DocsContent
+DocsCodeBlock
+DocsCallout
+DocsTabs
+OnThisPage
+DocsPagination
+
+Do not create giant 1000-line page components.
+
+============================================================
+PART 26 — ICONOGRAPHY
+
+Use lucide-react.
+
+Voices:
+
+Search
+Play
+Pause
+Volume2
+Mic
+Languages
+ArrowRight
+SlidersHorizontal
+X
+ChevronDown
+
+Docs:
+
+Search
+Copy
+Check
+ChevronRight
+ChevronLeft
+ExternalLink
+Menu
+X
+BookOpen
+Code2
+Terminal
+FileText
+
+Icons:
+
+16–18px
+stroke-width 1.5–2
+
+Never use huge decorative icons.
+
+============================================================
+PART 27 — IMPORTANT VISUAL CONSISTENCY WITH EXISTING AGENTS PAGE
+
+The existing Agents page has:
+
+warm off-white background
+black Bhasini navbar
+orange active underline
+large editorial heading
+rounded search input
+pill category filters
+white cards
+subtle borders
+gradient orbs
+restrained orange accents
+premium typography
+generous whitespace
+
+The Voices page MUST feel like its natural sibling.
+
+If someone navigates:
+
+Agents → Voices
+
+it should feel like one unified website.
+
+The existing AgentDetailModal should be the visual reference for the Voice Detail Modal.
+
+Do not invent a completely different modal language.
+
+============================================================
+PART 28 — DO NOT BREAK EXISTING PRODUCT
+
+ABSOLUTELY DO NOT:
+
+modify existing login styling
+modify existing signup styling
+modify dashboard layout
+modify Observatory
+modify Evaluation Kit
+modify Agent cards unnecessarily
+remove existing routes
+replace router architecture
+remove existing design-system files
+introduce Tailwind
+introduce unnecessary UI libraries
+introduce unnecessary dependencies
+overwrite existing components without inspecting them
+
+If a reusable existing component is already correct:
+
+USE IT.
+
+============================================================
+PART 29 — QUALITY BAR
+
+This is NOT a basic frontend assignment.
+
+The final pages should feel production-ready.
+
+Every detail matters:
+
+typography
+spacing
+alignment
+border weights
+corner radius
+hover states
+active states
+responsive behavior
+empty states
+loading states
+keyboard navigation
+micro-interactions
+content hierarchy
+
+Avoid:
+
+random gradients
+random colors
+huge shadows
+excessive rounded cards
+generic SaaS illustrations
+generic AI purple
+unnecessary glassmorphism
+excessive animations
+lorem ipsum
+dead buttons
+fake UI interactions
+
+============================================================
+PART 30 — ACCEPTANCE CRITERIA
+
+VOICES:
+
+✓ /voices works
+✓ Existing navbar reused
+✓ Voices active state works
+✓ Hero section exists
+✓ Voice visualization exists
+✓ Search works
+✓ Language filters work
+✓ Gender filters work
+✓ Style filters work
+✓ Featured voices exist
+✓ Voice library exists
+✓ 10+ realistic voices
+✓ Voice cards have waveform/player
+✓ Play/pause interaction works
+✓ Voice detail modal works
+✓ Native Indian scripts render correctly
+✓ Multilingual demo works
+✓ Language matrix exists
+✓ CTA section exists
+✓ Responsive mobile layout works
+✓ No horizontal overflow
+
+DOCUMENTATION:
+
+✓ /docs works
+✓ Existing navbar reused
+✓ Docs active state works
+✓ Documentation search works
+✓ Left navigation exists
+✓ Active documentation page works
+✓ Introduction page exists
+✓ Quickstart exists
+✓ Authentication exists
+✓ API reference exists
+✓ Voices API exists
+✓ Agents API exists
+✓ Calls API exists
+✓ Evaluation API exists
+✓ Code blocks are polished
+✓ Copy buttons work
+✓ Copied state works
+✓ JS/Python/cURL tabs work
+✓ Callouts exist
+✓ On-this-page navigation exists
+✓ Active section tracking works
+✓ Previous/next navigation exists
+✓ Mobile docs navigation works
+✓ Responsive layout works
+✓ No horizontal page overflow
+
+GLOBAL:
+
+✓ Existing Agents page still works
+✓ Existing Pricing page still works
+✓ Existing Login page still works
+✓ Existing Signup page still works
+✓ Existing Dashboard still works
+✓ Existing Observatory still works
+✓ Existing Evaluation Kit still works
+✓ Existing router remains functional
+✓ No TypeScript errors
+✓ No console errors
+✓ No unnecessary dependencies
+✓ No Tailwind
+✓ Existing Bhasini fonts preserved
+✓ Existing design tokens reused
+✓ Existing animation system reused

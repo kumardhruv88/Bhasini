@@ -1,0 +1,28 @@
+/* Docs Layout Responsiveness */
+
+/* Desktop (1024px and up) */
+@media (min-width: 1024px) {
+  .on-this-page-sidebar {
+    display: block !important;
+  }
+}
+
+/* Tablet / Mobile (under 1024px) */
+@media (max-width: 1023px) {
+  .docs-sidebar {
+    display: none !important;
+  }
+  .on-this-page-sidebar {
+    display: none !important;
+  }
+  .docs-main-content {
+    padding: 32px 24px !important;
+  }
+}
+
+/* Mobile specific tweaks */
+@media (max-width: 768px) {
+  .docs-main-content {
+    padding: 24px 16px !important;
+  }
+}

@@ -8,9 +8,12 @@ const AgentExplorerPage = lazy(() => import('./pages/AgentExplorerPage'));
 const AgentConversationPage = lazy(() => import('./pages/AgentConversationPage'));
 const VoicesPage = lazy(() => import('./pages/VoicesPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
+const DocsPage = lazy(() => import('./pages/DocsPage'));
 const LoginPage = lazy(() => import('./pages/AuthPage/LoginPage'));
 const SignupPage = lazy(() => import('./pages/AuthPage/SignupPage'));
-const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const HomePage = lazy(() => import('./pages/app/HomePage'));
+const ObservatoryPage = lazy(() => import('./pages/app/ObservatoryPage'));
+const EvalPage = lazy(() => import('./pages/app/EvalPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 function LoadingScreen() {
@@ -63,10 +66,13 @@ export default function App() {
               <Route path="/agents" element={<AgentExplorerPage />} />
               <Route path="/agents/:agentId/talk" element={<AgentConversationPage />} />
               <Route path="/voices" element={<VoicesPage />} />
+              <Route path="/docs" element={<DocsPage />} />
               <Route path="/pricing" element={<PricingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
-              <Route path="/app/home" element={<DashboardPage />} />
+              <Route path="/app/home" element={<HomePage />} />
+              <Route path="/app/observatory" element={<ObservatoryPage />} />
+              <Route path="/app/eval" element={<EvalPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
