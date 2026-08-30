@@ -8,6 +8,7 @@ import { AgentsFeatureGrid } from './AgentsFeatureGrid'
 import { ApiPlatformSection } from './ApiPlatformSection'
 import { ResearchSection } from './ResearchSection'
 import { SafetySection } from './SafetySection'
+import InlineOrbDemo from '../../components/InlineOrbDemo'
 import { pageVariants } from '../../design-system/motion'
 import Navbar from '../../components/layout/Navbar'
 
@@ -64,9 +65,66 @@ const Bubble = ({
   )
 }
 
+const LargeAgentOrb = () => {
+  return (
+    <div style={{ position: 'relative', width: 340, height: 340, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+        style={{
+          width: '100%',
+          height: '100%',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle at 40% 30%, #E2F5E5 0%, #81C784 40%, #1A73E8 85%, #0D47A1 100%)',
+          boxShadow: 'inset -20px -30px 60px rgba(0,0,0,0.4), inset 15px 15px 30px rgba(255,255,255,0.7), 0 30px 60px rgba(0,0,0,0.15)',
+          overflow: 'hidden',
+          position: 'absolute'
+        }}
+      >
+        <motion.div
+          animate={{ scale: [1, 1.15, 1], rotate: [0, 15, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            width: '140%', height: '140%', top: '-20%', left: '-20%', position: 'absolute',
+            background: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' opacity=\'0.3\'/%3E%3C/svg%3E")',
+            mixBlendMode: 'overlay',
+          }}
+        />
+        <motion.div
+          animate={{ x: [0, -40, 0], y: [0, 50, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute', width: '100%', height: '100%', top: '10%', right: '-20%',
+            background: 'radial-gradient(circle, rgba(26,115,232,0.7) 0%, transparent 60%)',
+            filter: 'blur(40px)'
+          }}
+        />
+      </motion.div>
+      
+      <div style={{
+        position: 'absolute', bottom: '-24px',
+        width: '64px', height: '64px', borderRadius: '50%', background: '#0D0D0D', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.2), 0 0 0 6px #F9F8F6',
+        zIndex: 10
+      }}>
+        <PhoneCall size={28} color="#FFF" fill="#FFF" />
+      </div>
+    </div>
+  )
+}
+
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState<Tab>('creative')
   const [creativeIndex, setCreativeIndex] = useState(2) // 0: Pink, 1: Copper, 2: Green
+  const [activeFeatureLink, setActiveFeatureLink] = useState('AI Voice Generator')
+
+  // New States for Agents Tab
+  const [agentMode, setAgentMode] = useState<'voice' | 'chat'>('voice')
+
+  // New States for API Tab
+  const [apiState, setApiState] = useState<'idle' | 'running' | 'done'>('idle')
+  const [apiLang, setApiLang] = useState('TypeScript')
+  const [apiLangDropdownOpen, setApiLangDropdownOpen] = useState(false)
 
   // Data
   const creativeBubbles = [
@@ -74,23 +132,28 @@ export default function LandingPage() {
       id: 0,
       gradient: 'radial-gradient(circle at 35% 25%, #FFFFFF 0%, #F5D3D8 40%, #CFA5D1 90%, #A582AD 100%)',
       title: 'Narration',
-      desc: 'Expressive voices that bring audiobooks and podcasts to life.'
+      desc: 'Expressive Hindi and Marathi voices that bring audiobooks and podcasts to life.'
     },
     {
       id: 1,
       gradient: 'radial-gradient(circle at 35% 25%, #FFD6A5 0%, #E07A5F 45%, #3D405B 85%, #1F2022 100%)',
       title: 'Conversational',
-      desc: 'Natural voices perfect for informal scenarios.'
+      desc: 'Natural code-switched Hinglish voices perfect for informal scenarios.'
     },
     {
       id: 2,
       gradient: 'radial-gradient(circle at 30% 20%, #FFF3B0 0%, #E09F3E 35%, #68B684 65%, #337CA0 100%)',
       title: 'Social Media',
-      desc: 'Trendy, attention-grabbing voices for short-form content.'
+      desc: 'Trendy regional voices (Tamil, Telugu, Bengali) for short-form content.'
     }
   ]
 
-  const bottomLinks = ['AI Voice Generator', 'Text to Speech', 'Music', 'Speech to Text', 'Voice Cloning', 'Dubbing']
+  const bottomLinksMap = {
+    creative: ['AI Voice Generator', 'Text to Speech', 'Music', 'Speech to Text', 'Voice Cloning', 'Dubbing'],
+    agents: ['Conversational AI', 'Phone Agents', 'WhatsApp', 'Chat Agents', 'Outbound', 'Analytics'],
+    api: ['Text to Speech API', 'Speech to Text API', 'Conversational API', 'Voice Design', 'Sound Effects', 'Dubbing API']
+  }
+  const currentBottomLinks = bottomLinksMap[activeTab]
 
   return (
     <motion.div
@@ -110,22 +173,33 @@ export default function LandingPage() {
           <div style={{ 
             display: 'flex', 
             gap: '64px', 
-            alignItems: 'flex-start', 
+            alignItems: 'center', 
             flexWrap: 'wrap', 
             marginBottom: '56px' 
           }}>
             <div style={{ flex: '1 1 480px' }}>
+
               <h1 style={{ 
                 fontSize: 'clamp(44px, 5.5vw, 68px)', 
                 fontWeight: 500, 
                 fontFamily: 'var(--font-display)', 
                 lineHeight: 1.05, 
                 letterSpacing: '-0.03em', 
-                margin: '0 0 32px 0', 
+                margin: '0 0 24px 0', 
                 color: '#0D0D0D' 
               }}>
                 Voice Intelligence.<br/>In Every Indian Language.
               </h1>
+              <p style={{ 
+                fontSize: '18px', 
+                lineHeight: 1.6, 
+                color: '#4A4A4A', 
+                margin: '0 0 32px 0',
+                fontFamily: 'var(--font-body)',
+                maxWidth: '480px'
+              }}>
+                Powering the best enterprises, creators, and developers. From BhasiniAgents for customer experience, BhasiniCreative for content creation, to the leading AI voice generator in regional languages.
+              </p>
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                 <button style={{ 
                   background: '#0D0D0D', color: '#FFF', 
@@ -153,16 +227,8 @@ export default function LandingPage() {
               </div>
             </div>
             
-            <div style={{ flex: '1 1 400px', paddingTop: '12px' }}>
-              <p style={{ 
-                fontSize: '18px', 
-                lineHeight: 1.6, 
-                color: '#4A4A4A', 
-                margin: 0,
-                fontFamily: 'var(--font-body)'
-              }}>
-                Powering the best enterprises, creators, and developers. From BhasiniAgents for customer experience, BhasiniCreative for content creation, to the leading AI voice generator in regional languages.
-              </p>
+            <div style={{ flex: '1 1 400px', display: 'flex', justifyContent: 'center' }}>
+              <InlineOrbDemo />
             </div>
           </div>
 
@@ -192,7 +258,12 @@ export default function LandingPage() {
               ].map(tab => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as Tab)}
+                  onClick={() => {
+                    setActiveTab(tab.id as Tab)
+                    if (tab.id === 'creative') setActiveFeatureLink('AI Voice Generator')
+                    if (tab.id === 'agents') setActiveFeatureLink('Conversational AI')
+                    if (tab.id === 'api') setActiveFeatureLink('Text to Speech API')
+                  }}
                   style={{
                     flex: 1,
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
@@ -338,39 +409,25 @@ export default function LandingPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 1.05 }}
                     transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
+                    style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '32px' }}
                   >
-                    <div style={{
-                      position: 'absolute',
-                      top: '40%',
-                      left: '50%',
-                    }}>
-                      <Bubble 
-                        size={320} 
-                        gradient="radial-gradient(circle at 40% 30%, #E2F5E5 0%, #81C784 40%, #1A73E8 85%, #0D47A1 100%)" 
-                        icon={PhoneCall} 
-                      />
+                    <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <LargeAgentOrb />
                     </div>
-                    <div style={{
-                      position: 'absolute',
-                      bottom: '40px',
-                      left: 0, right: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
-                      <div style={{ textAlign: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                          <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: 'radial-gradient(circle at 30% 30%, #FFF, #4CAF50, #1976D2)' }} />
-                          <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#0D0D0D', margin: 0, fontFamily: 'var(--font-body)' }}>
-                            BhasiniLabs Concierge <span style={{ opacity: 0.4, fontSize: '12px' }}>▼</span>
-                          </h3>
-                        </div>
-                        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '16px' }}>
-                          <span style={{ fontSize: '14px', color: '#0D0D0D', fontWeight: 600, padding: '4px 12px', background: '#FFF', borderRadius: '99px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>Voice</span>
-                          <span style={{ fontSize: '14px', color: '#6B6B6B', fontWeight: 500, padding: '4px 12px' }}>Chat</span>
-                        </div>
-                      </div>
+                    
+                    <div style={{ display: 'flex', gap: '4px', background: '#EAE8E3', padding: '4px', borderRadius: '99px', marginBottom: '20px' }}>
+                      <button 
+                        onClick={() => setAgentMode('voice')}
+                        style={{ padding: '6px 16px', fontSize: '13px', fontWeight: 600, border: 'none', borderRadius: '99px', cursor: 'pointer', fontFamily: 'var(--font-body)', color: agentMode === 'voice' ? '#0D0D0D' : '#6B6B6B', background: agentMode === 'voice' ? '#FFF' : 'transparent', boxShadow: agentMode === 'voice' ? '0 1px 4px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}
+                      >
+                        Voice
+                      </button>
+                      <button 
+                        onClick={() => setAgentMode('chat')}
+                        style={{ padding: '6px 16px', fontSize: '13px', fontWeight: 600, border: 'none', borderRadius: '99px', cursor: 'pointer', fontFamily: 'var(--font-body)', color: agentMode === 'chat' ? '#0D0D0D' : '#6B6B6B', background: agentMode === 'chat' ? '#FFF' : 'transparent', boxShadow: agentMode === 'chat' ? '0 1px 4px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s' }}
+                      >
+                        Chat
+                      </button>
                     </div>
                   </motion.div>
                 )}
@@ -393,30 +450,105 @@ export default function LandingPage() {
                       maxWidth: '100%',
                       marginTop: '-40px'
                     }}>
-                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', lineHeight: 1.6, color: '#333' }}>
-                        <span style={{ color: '#E91E63' }}>import</span> {'{'} BhasiniClient {'}'} <span style={{ color: '#E91E63' }}>from</span> <span style={{ color: '#2E7D32' }}>"@bhasini/sdk"</span>;
-                        <br/><br/>
-                        <span style={{ color: '#1565C0' }}>const</span> bhasini = <span style={{ color: '#E91E63' }}>new</span> BhasiniClient();<br/>
-                        <span style={{ color: '#1565C0' }}>const</span> audio = <span style={{ color: '#E91E63' }}>await</span> bhasini<br/>
-                        &nbsp;&nbsp;.textToSpeech.convert(<span style={{ color: '#2E7D32' }}>"NOpBlngIN09m6vDvFkFC"</span>, {'{'}<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;text: <span style={{ color: '#2E7D32' }}>"In the ancient land of Eldoria, where skies shimmered..."</span>,<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;modelId: <span style={{ color: '#2E7D32' }}>"bhasini_v3"</span>,<br/>
-                        &nbsp;&nbsp;&nbsp;&nbsp;languageCode: <span style={{ color: '#2E7D32' }}>"en"</span>,<br/>
-                        &nbsp;&nbsp;{'}'});
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', lineHeight: 1.6, color: '#333', minHeight: '140px' }}>
+                        {apiLang === 'TypeScript' && (
+                          <>
+                            <span style={{ color: '#E91E63' }}>import</span> {'{'} BhasiniClient {'}'} <span style={{ color: '#E91E63' }}>from</span> <span style={{ color: '#2E7D32' }}>"@bhasini/sdk"</span>;
+                            <br/><br/>
+                            <span style={{ color: '#1565C0' }}>const</span> bhasini = <span style={{ color: '#E91E63' }}>new</span> BhasiniClient();<br/>
+                            <span style={{ color: '#1565C0' }}>const</span> audio = <span style={{ color: '#E91E63' }}>await</span> bhasini<br/>
+                            &nbsp;&nbsp;.textToSpeech.convert(<span style={{ color: '#2E7D32' }}>"NOpBlngIN09m6vDvFkFC"</span>, {'{'}<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;text: <span style={{ color: '#2E7D32' }}>"In the ancient land of Eldoria, where skies shimmered..."</span>,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;modelId: <span style={{ color: '#2E7D32' }}>"bhasini_v3"</span>,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;languageCode: <span style={{ color: '#2E7D32' }}>"en"</span>,<br/>
+                            &nbsp;&nbsp;{'}'});
+                          </>
+                        )}
+                        {apiLang === 'Python' && (
+                          <>
+                            <span style={{ color: '#E91E63' }}>from</span> bhasini <span style={{ color: '#E91E63' }}>import</span> BhasiniClient
+                            <br/><br/>
+                            client = BhasiniClient()<br/>
+                            audio = client.text_to_speech.convert(<br/>
+                            &nbsp;&nbsp;voice_id=<span style={{ color: '#2E7D32' }}>"NOpBlngIN09m6vDvFkFC"</span>,<br/>
+                            &nbsp;&nbsp;text=<span style={{ color: '#2E7D32' }}>"In the ancient land of Eldoria..."</span>,<br/>
+                            &nbsp;&nbsp;model_id=<span style={{ color: '#2E7D32' }}>"bhasini_v3"</span><br/>
+                            )
+                          </>
+                        )}
+                        {apiLang === 'cURL' && (
+                          <>
+                            <span style={{ color: '#1565C0' }}>curl</span> -X POST https://api.bhasini.ai/v1/text-to-speech/NOpBlngIN09m6vDvFkFC \<br/>
+                            &nbsp;&nbsp;-H <span style={{ color: '#2E7D32' }}>"Content-Type: application/json"</span> \<br/>
+                            &nbsp;&nbsp;-H <span style={{ color: '#2E7D32' }}>"x-api-key: $BHASINI_API_KEY"</span> \<br/>
+                            &nbsp;&nbsp;-d <span style={{ color: '#2E7D32' }}>'{"{"}"text":"In the ancient land of Eldoria...","model_id":"bhasini_v3"{"}"}'</span>
+                          </>
+                        )}
                       </div>
                       
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '24px', borderTop: '1px solid #E0DED9', paddingTop: '16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0D0D0D', fontWeight: 600, fontSize: '14px', fontFamily: 'var(--font-body)' }}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
-                          TypeScript <span style={{ opacity: 0.5, fontSize: '12px' }}>▼</span>
+                      {apiState === 'done' && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }} 
+                          animate={{ opacity: 1, height: 'auto' }} 
+                          style={{ marginTop: '16px', padding: '12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px', color: '#166534', fontSize: '13px', fontFamily: 'var(--font-mono)' }}
+                        >
+                          ✓ Execution complete. Audio stream ready. (Latency: 234ms)
+                        </motion.div>
+                      )}
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '24px', borderTop: '1px solid #E0DED9', paddingTop: '16px', position: 'relative' }}>
+                        
+                        <div style={{ position: 'relative' }}>
+                          <div 
+                            onClick={() => setApiLangDropdownOpen(!apiLangDropdownOpen)}
+                            style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: '#0D0D0D', fontWeight: 600, fontSize: '14px', fontFamily: 'var(--font-body)' }}
+                          >
+                            {apiLang} <span style={{ fontSize: '10px' }}>▼</span>
+                          </div>
+                          <AnimatePresence>
+                            {apiLangDropdownOpen && (
+                              <motion.div
+                                initial={{ opacity: 0, y: -5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -5 }}
+                                style={{ position: 'absolute', top: '100%', left: 0, marginTop: '8px', background: '#FFF', border: '1px solid #EAE8E3', borderRadius: '12px', padding: '6px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', zIndex: 50, minWidth: '140px' }}
+                              >
+                                {['TypeScript', 'Python', 'cURL'].map(lang => (
+                                  <div
+                                    key={lang}
+                                    onClick={() => {
+                                      setApiLang(lang)
+                                      setApiLangDropdownOpen(false)
+                                    }}
+                                    style={{ padding: '8px 12px', fontSize: '13px', cursor: 'pointer', borderRadius: '6px', fontFamily: 'var(--font-body)', fontWeight: 500, background: apiLang === lang ? '#F5F5F5' : 'transparent', color: '#0D0D0D' }}
+                                    onMouseEnter={e => e.currentTarget.style.background = '#F5F5F5'}
+                                    onMouseLeave={e => e.currentTarget.style.background = apiLang === lang ? '#F5F5F5' : 'transparent'}
+                                  >
+                                    {lang}
+                                  </div>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
-                        <button style={{ 
-                          background: '#0D0D0D', color: '#FFF', 
-                          padding: '10px 20px', borderRadius: '99px', 
-                          border: 'none', fontWeight: 600, fontSize: '13px', 
-                          cursor: 'pointer', fontFamily: 'var(--font-body)'
-                        }}>
-                          Run code
+
+                        <button 
+                          onClick={() => {
+                            if (apiState === 'running') return
+                            setApiState('running')
+                            setTimeout(() => setApiState('done'), 1500)
+                            setTimeout(() => setApiState('idle'), 5000)
+                          }}
+                          style={{ 
+                            background: apiState === 'running' ? '#6B6B6B' : apiState === 'done' ? '#22C55E' : '#0D0D0D', 
+                            color: '#FFF', 
+                            padding: '10px 20px', borderRadius: '99px', 
+                            border: 'none', fontWeight: 600, fontSize: '13px', 
+                            cursor: apiState === 'running' ? 'wait' : 'pointer', fontFamily: 'var(--font-body)',
+                            width: '100px', display: 'flex', justifyContent: 'center'
+                          }}
+                        >
+                          {apiState === 'running' ? 'Running...' : apiState === 'done' ? 'Done' : 'Run code'}
                         </button>
                       </div>
                     </div>
@@ -436,25 +568,27 @@ export default function LandingPage() {
               gap: '16px'
             }}>
               <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', paddingLeft: '8px' }}>
-                {bottomLinks.map((link, i) => (
-                  <a 
-                    key={link} 
-                    href="#" 
-                    style={{ 
-                      textDecoration: 'none', 
-                      color: i === 0 ? '#0D0D0D' : '#6B6B6B', 
-                      fontWeight: i === 0 ? 600 : 500,
-                      fontSize: '14px',
+                {currentBottomLinks.map((link) => (
+                  <button 
+                    key={link}
+                    onClick={() => setActiveFeatureLink(link)}
+                    style={{
+                      border: 'none', cursor: 'pointer',
+                      color: activeFeatureLink === link ? '#0D0D0D' : '#6B6B6B',
+                      fontWeight: activeFeatureLink === link ? 600 : 500,
+                      fontSize: '13px',
                       fontFamily: 'var(--font-body)',
-                      background: i === 0 ? '#FFFFFF' : 'transparent',
-                      padding: i === 0 ? '8px 16px' : '8px 0',
-                      borderRadius: i === 0 ? '99px' : '0',
-                      boxShadow: i === 0 ? '0 2px 8px rgba(0,0,0,0.04)' : 'none',
-                      transition: 'color 0.2s'
+                      background: activeFeatureLink === link ? '#FFFFFF' : 'transparent',
+                      padding: '6px 14px',
+                      borderRadius: '9999px',
+                      boxShadow: activeFeatureLink === link ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                      transition: 'all 0.15s'
                     }}
+                    onMouseEnter={e => { if (activeFeatureLink !== link) e.currentTarget.style.color = '#0D0D0D' }}
+                    onMouseLeave={e => { if (activeFeatureLink !== link) e.currentTarget.style.color = '#6B6B6B' }}
                   >
                     {link}
-                  </a>
+                  </button>
                 ))}
               </div>
               
@@ -485,6 +619,60 @@ export default function LandingPage() {
       
         </div>
       </main>
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.85, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 1.5, ease: [0.16,1,0.3,1] }}
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          zIndex: 150,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0,
+        }}
+      >
+        <motion.div
+          animate={{ y: [0, -3, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            background: 'white',
+            borderRadius: '9999px',
+            border: '1px solid #E0DED9',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.10)',
+            display: 'flex',
+            alignItems: 'center',
+            overflow: 'hidden',
+            cursor: 'pointer',
+          }}
+          whileHover={{ scale: 1.02, boxShadow: '0 8px 32px rgba(0,0,0,0.14)' }}
+          whileTap={{ scale: 0.98 }}
+        >
+          {/* Label */}
+          <span style={{
+            padding: '10px 16px 10px 20px',
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: '14px',
+            fontWeight: 500,
+            color: '#0D0D0D',
+            whiteSpace: 'nowrap',
+          }}>
+            Voice chat
+          </span>
+          
+          {/* Orb */}
+          <div style={{
+            width: '48px', height: '48px',
+            borderRadius: '50%',
+            flexShrink: 0,
+            margin: '3px 3px 3px 0',
+            background: 'radial-gradient(circle at 35% 30%, #C8F7F5 0%, #5DDBD8 25%, #3CCFCF 45%, #1A73E8 70%, #0E4D8C 100%)',
+            boxShadow: '0 2px 12px rgba(26,115,232,0.30), inset 0 1px 0 rgba(255,255,255,0.3)',
+          }} />
+        </motion.div>
+      </motion.div>
     </motion.div>
   )
 }

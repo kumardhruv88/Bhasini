@@ -1,15 +1,42 @@
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export function ResearchSection() {
-  const [index, setIndex] = useState(2)
+  const [startIndex, setStartIndex] = useState(0)
+  const visibleCount = 4
 
   const milestones = [
-    { date: 'Feb 2024', title: 'Bhasini v1', desc: 'First Indian language voice cloning model.' },
-    { date: 'Oct 2024', title: 'Multilingual Speech', desc: 'Real-time speech generation across 22 dialects.' },
-    { date: 'May 2026', title: 'BhasiniAgents', desc: 'For the first time, emotion and performance of the original speaker carries across every conversation.' },
-    { date: 'Dec 2026', title: 'Real-time Translation', desc: 'Zero-latency voice-to-voice translation.' },
+    {
+      date: 'March 2025',
+      title: 'Hindi Voice Engine v1',
+      desc: 'First human-like Hindi TTS model. 95% naturalness score.',
+    },
+    {
+      date: 'June 2025',
+      title: 'Multilingual Expansion',
+      desc: '8 Indian languages added. Tamil and Telugu achieve near-native quality.',
+    },
+    {
+      date: 'September 2025',
+      title: 'BhasiniAgents Launch',
+      desc: 'Conversational agent framework. Sub-800ms latency in production.',
+    },
+    {
+      date: 'January 2026',
+      title: 'Hinglish Model',
+      desc: "World's first code-switched Hinglish voice model. 40M speakers served.",
+    },
+    {
+      date: 'May 2026',
+      title: 'Enterprise Platform',
+      desc: 'Emotion and context carry across every conversation turn for the first time.',
+    },
+    {
+      date: 'August 2026',
+      title: 'Bhasini API v2',
+      desc: 'Real-time streaming, 22+ Indian languages, 75ms Flash model.',
+    },
   ]
 
   return (
@@ -42,67 +69,71 @@ export function ResearchSection() {
         padding: '64px 32px', 
         border: '1px solid #EBE9E4', 
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '400px',
         position: 'relative',
         overflow: 'hidden'
       }}>
-        {/* Timeline track */}
-        <div style={{ position: 'absolute', top: '50%', left: '100px', right: '100px', height: '1px', background: '#EAE8E3' }}>
-          {/* Tick marks */}
-          {Array.from({ length: 30 }).map((_, i) => (
-             <div key={i} style={{ position: 'absolute', left: `${(i / 29) * 100}%`, top: '-4px', width: '1px', height: i % 5 === 0 ? '8px' : '4px', background: i % 5 === 0 ? '#C8C5C0' : '#EAE8E3' }}></div>
-          ))}
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '32px', position: 'relative', zIndex: 10 }}>
+        
+        <div style={{ display: 'flex', width: '100%', alignItems: 'center', gap: '24px', zIndex: 10 }}>
           <button 
-            onClick={() => setIndex(Math.max(0, index - 1))}
+            onClick={() => setStartIndex(Math.max(0, startIndex - 1))}
             style={{ 
-              width: '40px', height: '40px', borderRadius: '50%', background: '#FFF', 
+              width: '48px', height: '48px', borderRadius: '50%', background: '#FFF', flexShrink: 0,
               border: '1px solid #EAE8E3', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: index > 0 ? 'pointer' : 'default', opacity: index > 0 ? 1 : 0.5,
+              cursor: startIndex > 0 ? 'pointer' : 'default', opacity: startIndex > 0 ? 1 : 0.5,
               boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
             }}
           >
             <ChevronLeft size={20} />
           </button>
           
-          <div style={{ width: '400px', position: 'relative', height: '200px' }}>
-             <motion.div 
-               key={index}
-               initial={{ opacity: 0, x: 20 }}
-               animate={{ opacity: 1, x: 0 }}
-               transition={{ duration: 0.4 }}
-               style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}
-             >
-                <div style={{ fontSize: '18px', fontWeight: 600, color: '#0D0D0D', marginBottom: '80px' }}>
-                  {milestones[index].title}
-                </div>
-                <div style={{ width: '2px', height: '60px', background: '#0D0D0D', position: 'absolute', top: '70px' }}></div>
-                <div style={{ fontSize: '14px', color: '#0D0D0D', fontWeight: 500, marginTop: '20px', lineHeight: 1.5 }}>
-                  {milestones[index].desc}
-                </div>
-                <div style={{ fontSize: '12px', color: '#9E9E9E', marginTop: '8px' }}>
-                  {milestones[index].date}
-                </div>
-             </motion.div>
+          <div style={{ flex: 1, position: 'relative', height: '280px' }}>
+            {/* Horizontal Line */}
+            <div style={{ position: 'absolute', top: '140px', left: 0, right: 0, height: '1px', background: '#EAE8E3' }}></div>
+            
+            <div style={{ position: 'absolute', inset: 0, display: 'flex' }}>
+              <AnimatePresence mode="popLayout">
+                {milestones.slice(startIndex, startIndex + visibleCount).map((m) => (
+                  <motion.div 
+                    key={m.title}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3 }}
+                    style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}
+                  >
+                     {/* Top half */}
+                     <div style={{ height: '140px', display: 'flex', alignItems: 'flex-end', paddingBottom: '40px' }}>
+                        <div style={{ fontSize: '15px', fontWeight: 600, color: '#0D0D0D' }}>{m.title}</div>
+                     </div>
+                     {/* The tick mark */}
+                     <div style={{ position: 'absolute', top: '128px', width: '2px', height: '24px', background: '#0D0D0D' }}></div>
+                     {/* Bottom half */}
+                     <div style={{ height: '140px', paddingTop: '40px', paddingLeft: '16px', paddingRight: '16px' }}>
+                        <div style={{ fontSize: '13px', color: '#6B6B6B', lineHeight: 1.5, marginBottom: '12px' }}>{m.desc}</div>
+                        <div style={{ fontSize: '11px', color: '#9E9E9E', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{m.date}</div>
+                     </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
 
           <button 
-            onClick={() => setIndex(Math.min(milestones.length - 1, index + 1))}
+            onClick={() => setStartIndex(Math.min(milestones.length - visibleCount, startIndex + 1))}
             style={{ 
-              width: '40px', height: '40px', borderRadius: '50%', background: '#FFF', 
+              width: '48px', height: '48px', borderRadius: '50%', background: '#FFF', flexShrink: 0,
               border: '1px solid #EAE8E3', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: index < milestones.length - 1 ? 'pointer' : 'default', opacity: index < milestones.length - 1 ? 1 : 0.5,
+              cursor: startIndex < milestones.length - visibleCount ? 'pointer' : 'default', opacity: startIndex < milestones.length - visibleCount ? 1 : 0.5,
               boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
             }}
           >
             <ChevronRight size={20} />
           </button>
         </div>
+
       </div>
     </section>
   )

@@ -1,4 +1,4 @@
-import React from 'react'
+
 
 export function SafetySection() {
   return (
@@ -34,8 +34,8 @@ export function SafetySection() {
         
         {/* Moderation */}
         <div style={{ background: '#F9F8F6', borderRadius: '24px', padding: '40px 32px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px' }}>
-            <svg width="160" height="160" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '240px' }}>
+            <svg width="240" height="240" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                {/* Cone wireframe */}
                <ellipse cx="150" cy="100" rx="20" ry="60" stroke="#0D0D0D" strokeWidth="1" strokeDasharray="2 2"/>
                <ellipse cx="150" cy="100" rx="20" ry="60" stroke="#0D0D0D" strokeWidth="1" strokeDasharray="4 0" strokeDashoffset="0" pathLength="100" />
@@ -53,8 +53,8 @@ export function SafetySection() {
 
         {/* Accountability */}
         <div style={{ background: '#F9F8F6', borderRadius: '24px', padding: '40px 32px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px' }}>
-            <svg width="160" height="160" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '240px' }}>
+            <svg width="240" height="240" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                {/* Cube wireframe */}
                <rect x="50" y="50" width="80" height="80" stroke="#0D0D0D" strokeWidth="1" fill="none" />
                <rect x="70" y="30" width="80" height="80" stroke="#0D0D0D" strokeWidth="1" fill="none" strokeDasharray="2 2" />
@@ -84,8 +84,8 @@ export function SafetySection() {
 
         {/* Provenance */}
         <div style={{ background: '#F9F8F6', borderRadius: '24px', padding: '40px 32px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px' }}>
-            <svg width="160" height="160" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '240px' }}>
+            <svg width="240" height="240" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                {/* Nested circles wireframe */}
                {[60, 50, 40, 30, 20, 10].map((r, i) => (
                  <circle key={r} cx={100 - (i * 10)} cy="100" r={r} stroke="#0D0D0D" strokeWidth="1" strokeDasharray={i % 2 === 0 ? "2 2" : "none"} />

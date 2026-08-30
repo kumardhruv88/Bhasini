@@ -1,7 +1,7 @@
-import React from 'react'
+
 
 export function TrustedBySection() {
-  const logos = ['Twilio', 'Disney', 'KPN', 'Stripe', 'Telus', 'Cisco', 'Epic Games', 'NVIDIA', 'Revolut', 'Meta', 'Square', 'Deliveroo', 'IBM', 'T-Mobile', 'Meesho', 'Harvey']
+  const logos = ['Razorpay', 'PhonePe', 'Zomato', 'MakeMyTrip', 'Practo', 'IRCTC', 'Meesho', 'Zepto', 'Ola', 'upGrad', 'Nykaa', "BYJU'S", 'Paytm', 'Swiggy', 'PolicyBazaar', 'Groww', 'Vedantu', 'Juspay']
   
   return (
     <section style={{ padding: '80px 32px', maxWidth: '1160px', margin: '0 auto' }}>

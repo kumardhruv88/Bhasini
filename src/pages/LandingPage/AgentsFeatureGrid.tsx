@@ -1,4 +1,5 @@
-import React from 'react'
+import { FlaskConical, Shield, Zap } from 'lucide-react'
+
 
 export function AgentsFeatureGrid() {
   return (
@@ -43,7 +44,7 @@ export function AgentsFeatureGrid() {
         {/* Large Left Card - Chat UI Mockup */}
         <div style={{ 
           gridColumn: 'span 6', 
-          background: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' opacity=\'0.15\'/%3E%3C/svg%3E"), radial-gradient(circle at 30% 70%, #42C785 0%, #173B25 60%, #0D0D0D 100%)',
+          background: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' opacity=\'0.15\'/%3E%3C/svg%3E"), radial-gradient(circle at 30% 70%, #42C785 0%, #173B25 50%, #FF9933 120%)',
           backgroundBlendMode: 'overlay, normal',
           borderRadius: '24px', 
           overflow: 'hidden',
@@ -67,9 +68,6 @@ export function AgentsFeatureGrid() {
               </div>
               <div style={{ alignSelf: 'flex-start', background: '#FFF', padding: '12px 16px', borderRadius: '16px 16px 16px 4px', color: '#0D0D0D', fontSize: '14px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
                 Thank you. I have initiated the<br/>order refund process.
-              </div>
-              <div style={{ alignSelf: 'flex-start', background: '#FFF', padding: '12px 16px', borderRadius: '99px', color: '#1A73E8', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                <span style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#1A73E8', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' }}>$</span> Refund completed
               </div>
            </div>
         </div>
@@ -136,9 +134,9 @@ export function AgentsFeatureGrid() {
 
         {/* Small Cards Row */}
         {[
-          { title: 'Testing', desc: 'Simulate real-world conversations to validate agents behave as expected before deployment.', icon: '🧪' },
-          { title: 'Guardrails', desc: 'Establish clear behavioral and compliance rules that keep agent responses aligned with policy.', icon: '🛡️' },
-          { title: 'Workflows', desc: 'Handle complex conversation flows, apply business logic and connect securely to systems.', icon: '⚡' },
+          { title: 'Testing', desc: 'Simulate real-world conversations to validate agents behave as expected before deployment.', icon: <FlaskConical size={20} color="#6B6B6B" strokeWidth={1.5} /> },
+          { title: 'Guardrails', desc: 'Establish clear behavioral and compliance rules that keep agent responses aligned with policy.', icon: <Shield size={20} color="#6B6B6B" strokeWidth={1.5} /> },
+          { title: 'Workflows', desc: 'Handle complex conversation flows, apply business logic and connect securely to systems.', icon: <Zap size={20} color="#6B6B6B" strokeWidth={1.5} /> },
         ].map((card, i) => (
           <div key={i} style={{ 
             gridColumn: 'span 4', 
