@@ -155,7 +155,8 @@ agent = bhasini.agents.create(
           API Reference
         </h2>
         
-        {/* Endpoint */}
+        {/* Voices API */}
+        <h3 style={{ fontFamily: DISPLAY, fontSize: '20px', fontWeight: 500, color: '#0D0D0D', marginBottom: '16px', marginTop: '32px' }}>Voices API</h3>
         <div style={{ border: '1px solid #E0DED9', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px' }}>
           <div style={{ background: '#F7F5F2', padding: '16px 20px', borderBottom: '1px solid #E0DED9', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: '#16A34A', background: 'rgba(22, 163, 74, 0.1)', padding: '4px 8px', borderRadius: '6px' }}>GET</div>
@@ -179,10 +180,78 @@ agent = bhasini.agents.create(
           </div>
         </div>
 
+        {/* Agents API */}
+        <h3 style={{ fontFamily: DISPLAY, fontSize: '20px', fontWeight: 500, color: '#0D0D0D', marginBottom: '16px', marginTop: '48px' }}>Agents API</h3>
+        <div style={{ border: '1px solid #E0DED9', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px' }}>
+          <div style={{ background: '#F7F5F2', padding: '16px 20px', borderBottom: '1px solid #E0DED9', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: '#F97316', background: 'rgba(249, 115, 22, 0.1)', padding: '4px 8px', borderRadius: '6px' }}>POST</div>
+            <div style={{ fontFamily: MONO, fontSize: '14px', color: '#0D0D0D' }}>/v1/agents</div>
+          </div>
+          <div style={{ padding: '20px' }}>
+            <p style={{ fontFamily: BODY, fontSize: '15px', color: '#686868', marginBottom: '20px' }}>
+              Create a new multilingual voice agent.
+            </p>
+          </div>
+        </div>
+
+        {/* Calls API */}
+        <h3 style={{ fontFamily: DISPLAY, fontSize: '20px', fontWeight: 500, color: '#0D0D0D', marginBottom: '16px', marginTop: '48px' }}>Calls API</h3>
+        <div style={{ border: '1px solid #E0DED9', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px' }}>
+          <div style={{ background: '#F7F5F2', padding: '16px 20px', borderBottom: '1px solid #E0DED9', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: '#F97316', background: 'rgba(249, 115, 22, 0.1)', padding: '4px 8px', borderRadius: '6px' }}>POST</div>
+            <div style={{ fontFamily: MONO, fontSize: '14px', color: '#0D0D0D' }}>/v1/calls/outbound</div>
+          </div>
+          <div style={{ padding: '20px' }}>
+            <p style={{ fontFamily: BODY, fontSize: '15px', color: '#686868', marginBottom: '20px' }}>
+              Initiate an outbound call from an agent.
+            </p>
+          </div>
+        </div>
+
+        {/* Evaluations API */}
+        <h3 style={{ fontFamily: DISPLAY, fontSize: '20px', fontWeight: 500, color: '#0D0D0D', marginBottom: '16px', marginTop: '48px' }}>Evaluations API</h3>
+        <div style={{ border: '1px solid #E0DED9', borderRadius: '16px', overflow: 'hidden', marginBottom: '24px' }}>
+          <div style={{ background: '#F7F5F2', padding: '16px 20px', borderBottom: '1px solid #E0DED9', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ fontFamily: MONO, fontSize: '11px', fontWeight: 700, color: '#16A34A', background: 'rgba(22, 163, 74, 0.1)', padding: '4px 8px', borderRadius: '6px' }}>GET</div>
+            <div style={{ fontFamily: MONO, fontSize: '14px', color: '#0D0D0D' }}>/v1/evaluations</div>
+          </div>
+          <div style={{ padding: '20px' }}>
+            <p style={{ fontFamily: BODY, fontSize: '15px', color: '#686868', marginBottom: '20px' }}>
+              Retrieve automated evaluation scores for agent conversations.
+            </p>
+          </div>
+        </div>
+
         <DocsCallout type="TIP">
           Use the Evaluation Kit before deploying an agent to production.
         </DocsCallout>
       </section>
+
+      {/* Docs Footer */}
+      <div style={{ borderTop: '1px solid #E0DED9', paddingTop: '40px', marginTop: '80px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '64px' }}>
+          <a href="#introduction" style={{ display: 'flex', flexDirection: 'column', textDecoration: 'none' }}>
+            <span style={{ fontFamily: MONO, fontSize: '10px', color: '#9A9A9A', letterSpacing: '0.12em', marginBottom: '8px', textTransform: 'uppercase' }}>Previous</span>
+            <span style={{ fontFamily: BODY, fontSize: '16px', color: '#0D0D0D', fontWeight: 500 }}>← Introduction</span>
+          </a>
+          <a href="#quickstart" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', textDecoration: 'none' }}>
+            <span style={{ fontFamily: MONO, fontSize: '10px', color: '#9A9A9A', letterSpacing: '0.12em', marginBottom: '8px', textTransform: 'uppercase' }}>Next</span>
+            <span style={{ fontFamily: BODY, fontSize: '16px', color: '#FF6B35', fontWeight: 500 }}>Quickstart →</span>
+          </a>
+        </div>
+
+        <div style={{ background: '#0D0D0D', borderRadius: '16px', padding: '40px', textAlign: 'center' }}>
+          <h3 style={{ fontFamily: DISPLAY, fontSize: '24px', fontWeight: 400, color: '#FFFFFF', marginBottom: '24px' }}>Still have questions?</h3>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
+            <button style={{ height: '40px', padding: '0 20px', background: '#FFFFFF', color: '#0D0D0D', border: 'none', borderRadius: '9999px', fontFamily: BODY, fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+              Contact support
+            </button>
+            <button style={{ height: '40px', padding: '0 20px', background: 'transparent', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '9999px', fontFamily: BODY, fontSize: '14px', fontWeight: 500, cursor: 'pointer' }}>
+              Explore agents
+            </button>
+          </div>
+        </div>
+      </div>
 
     </div>
   )

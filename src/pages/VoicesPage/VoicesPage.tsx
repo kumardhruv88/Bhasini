@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Play, Pause } from 'lucide-react'
 import Navbar from '../../components/layout/Navbar/Navbar'
@@ -20,9 +20,25 @@ export default function VoicesPage() {
   const [demoPlaying, setDemoPlaying] = useState(false)
 
   const featuredVoices = voicesData.slice(0, 3)
-  const allVoices = voicesData
+  const [heroVoiceIndex, setHeroVoiceIndex] = useState(0)
 
-  const filteredVoices = allVoices.filter(v => {
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroVoiceIndex(prev => (prev + 1) % 4)
+    }, 4000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const heroVoice = voicesData[heroVoiceIndex]
+  const heroGradients = [
+    'linear-gradient(135deg, #FF6B35, #FF3CAC)', // Aarohi (Warm)
+    'linear-gradient(135deg, #3B82F6, #8B5CF6)', // Kabir (Professional)
+    'linear-gradient(135deg, #10B981, #3B82F6)', // Meera (Conversational)
+    'linear-gradient(135deg, #F59E0B, #FF6B35)'  // Arjun (Energetic)
+  ]
+  const currentGradient = heroGradients[heroVoiceIndex]
+
+  const filteredVoices = voicesData.filter(v => {
     if (searchQuery && !v.name.toLowerCase().includes(searchQuery.toLowerCase())) return false
     if (activeLang !== 'All' && !v.languages.includes(activeLang)) return false
     if (activeGender !== 'All' && v.gender !== activeGender.toUpperCase()) return false
@@ -39,7 +55,7 @@ export default function VoicesPage() {
         <div style={{ maxWidth: '1320px', margin: '0 auto', padding: '80px 32px 40px', display: 'flex', flexWrap: 'wrap', gap: '60px', alignItems: 'center' }}>
           
           {/* Left Text */}
-          <div style={{ flex: '1 1 500px' }}>
+          <div style={{ flex: '1 1 500px', overflowY: 'auto', padding: '32px', msOverflowStyle: 'none', scrollbarWidth: 'none' }} className="no-scrollbar">
             <div style={{ fontFamily: MONO, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.16em', color: '#9A9A9A', marginBottom: '16px' }}>
               VOICE LIBRARY
             </div>
@@ -55,28 +71,45 @@ export default function VoicesPage() {
           <div style={{ flex: '1 1 400px', display: 'flex', justifyContent: 'center' }}>
             <div style={{ position: 'relative', width: '320px', height: '320px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
               {/* Orb */}
-              <div style={{
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #FF6B35, #FF3CAC)',
-                opacity: 0.15,
-                filter: 'blur(40px)',
-                zIndex: 0
-              }} />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={heroVoiceIndex}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 0.04, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  transition={{ duration: 0.8 }}
+                  style={{
+                    position: 'absolute',
+                    width: '240px',
+                    height: '240px',
+                    borderRadius: '50%',
+                    background: currentGradient,
+                    filter: 'blur(30px)',
+                    zIndex: 0
+                  }} 
+                />
+              </AnimatePresence>
               
-              <div style={{
-                width: '180px',
-                height: '180px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #FF6B35, #FF3CAC)',
-                maskImage: 'radial-gradient(circle at 35% 30%, rgba(255,255,255,0.65), transparent 35%)',
-                WebkitMaskImage: 'radial-gradient(circle at 35% 30%, rgba(255,255,255,0.65), transparent 85%)',
-                zIndex: 1,
-                boxShadow: 'inset 0 0 40px rgba(255,255,255,0.4)',
-                marginBottom: '32px'
-              }} />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`inner-${heroVoiceIndex}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                  style={{
+                    width: '180px',
+                    height: '180px',
+                    borderRadius: '50%',
+                    background: currentGradient,
+                    maskImage: 'radial-gradient(circle at 35% 30%, rgba(255,255,255,0.65), transparent 35%)',
+                    WebkitMaskImage: 'radial-gradient(circle at 35% 30%, rgba(255,255,255,0.65), transparent 85%)',
+                    zIndex: 1,
+                    boxShadow: 'inset 0 0 40px rgba(255,255,255,0.4)',
+                    marginBottom: '32px'
+                  }} 
+                />
+              </AnimatePresence>
 
               {/* Waveform graphic mock */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '3px', zIndex: 1, marginBottom: '24px' }}>
@@ -88,14 +121,23 @@ export default function VoicesPage() {
               </div>
 
               {/* Metadata */}
-              <div style={{ zIndex: 1, textAlign: 'center' }}>
-                <div style={{ fontFamily: DISPLAY, fontSize: '16px', fontWeight: 600, color: '#0D0D0D', letterSpacing: '-0.01em', marginBottom: '6px' }}>
-                  AAROHI
-                </div>
-                <div style={{ fontFamily: MONO, fontSize: '10px', color: '#9A9A9A', letterSpacing: '0.12em' }}>
-                  HINDI · FEMALE · WARM
-                </div>
-              </div>
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={`meta-${heroVoiceIndex}`}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  transition={{ duration: 0.4 }}
+                  style={{ zIndex: 1, textAlign: 'center' }}
+                >
+                  <div style={{ fontFamily: DISPLAY, fontSize: '16px', fontWeight: 600, color: '#0D0D0D', letterSpacing: '-0.01em', marginBottom: '6px', textTransform: 'uppercase' }}>
+                    {heroVoice.name}
+                  </div>
+                  <div style={{ fontFamily: MONO, fontSize: '10px', color: '#9A9A9A', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                    {heroVoice.languages[0]} · {heroVoice.gender} · {heroVoice.style}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </div>
@@ -262,11 +304,11 @@ export default function VoicesPage() {
         </div>
 
         {/* FINAL CTA */}
-        <div style={{ maxWidth: '1000px', margin: '40px auto 0', padding: '0 32px' }}>
+        <div style={{ maxWidth: '800px', margin: '40px auto 0', padding: '0 32px' }}>
           <div style={{ 
             background: '#0D0D0D', 
             borderRadius: '24px', 
-            padding: '64px', 
+            padding: '48px', 
             textAlign: 'center',
             position: 'relative',
             overflow: 'hidden'
@@ -282,18 +324,15 @@ export default function VoicesPage() {
               pointerEvents: 'none'
             }} />
             
-            <h2 style={{ fontFamily: DISPLAY, fontSize: 'clamp(36px, 5vw, 48px)', fontWeight: 300, color: '#FFFFFF', letterSpacing: '-0.03em', marginBottom: '16px', position: 'relative' }}>
+            <h2 style={{ fontFamily: DISPLAY, fontSize: '32px', fontWeight: 300, color: '#FFFFFF', letterSpacing: '-0.03em', marginBottom: '12px', position: 'relative' }}>
               Give your agent a voice.
             </h2>
-            <p style={{ fontFamily: BODY, fontSize: '18px', color: 'rgba(255,255,255,0.7)', marginBottom: '40px', position: 'relative' }}>
+            <p style={{ fontFamily: BODY, fontSize: '16px', color: 'rgba(255,255,255,0.7)', marginBottom: '32px', position: 'relative' }}>
               Choose a voice, connect a language, and start building.
             </p>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', position: 'relative' }}>
-              <button style={{ height: '48px', padding: '0 24px', background: '#FFFFFF', color: '#0D0D0D', border: 'none', borderRadius: '9999px', fontFamily: BODY, fontSize: '15px', fontWeight: 600, cursor: 'pointer' }}>
+              <button style={{ height: '40px', padding: '0 20px', background: '#FFFFFF', color: '#0D0D0D', border: 'none', borderRadius: '9999px', fontFamily: BODY, fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
                 Create an agent
-              </button>
-              <button style={{ height: '48px', padding: '0 24px', background: 'transparent', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '9999px', fontFamily: BODY, fontSize: '15px', fontWeight: 500, cursor: 'pointer' }}>
-                Explore agents
               </button>
             </div>
           </div>
@@ -328,15 +367,17 @@ export default function VoicesPage() {
                 top: 0,
                 right: 0,
                 bottom: 0,
-                width: 'min(440px, 100vw)',
+                width: '100%',
+                maxWidth: '480px',
                 background: '#FFFFFF',
                 zIndex: 1000,
-                boxShadow: '-20px 0 40px rgba(0,0,0,0.1)',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                boxShadow: '-4px 0 24px rgba(0,0,0,0.05)',
+                borderLeft: '1px solid #E0DED9'
               }}
             >
-              <div style={{ padding: '24px', borderBottom: '1px solid #E0DED9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ padding: '32px 32px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid #E0DED9' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: selectedVoice.gradient }} />
                   <div>
@@ -398,8 +439,24 @@ export default function VoicesPage() {
                 </div>
               </div>
 
-              <div style={{ padding: '24px', borderTop: '1px solid #E0DED9' }}>
-                <button style={{ width: '100%', height: '52px', background: '#0D0D0D', color: 'white', border: 'none', borderRadius: '9999px', fontFamily: BODY, fontSize: '15px', fontWeight: 600, cursor: 'pointer' }}>
+              {/* Footer */}
+              <div style={{ padding: '24px 32px', borderTop: '1px solid #E0DED9', background: '#F7F5F2' }}>
+                <button style={{
+                  width: '100%',
+                  height: '48px',
+                  background: '#0D0D0D',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '24px',
+                  fontFamily: BODY,
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'transform 150ms ease'
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'}
+                onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                >
                   Use this voice
                 </button>
               </div>

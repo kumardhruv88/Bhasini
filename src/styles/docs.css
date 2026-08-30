@@ -18,6 +18,9 @@
   .docs-main-content {
     padding: 32px 24px !important;
   }
+  .docs-mobile-topbar {
+    display: flex !important;
+  }
 }
 
 /* Mobile specific tweaks */

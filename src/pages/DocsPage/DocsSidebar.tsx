@@ -30,22 +30,22 @@ const SECTIONS = [
   }
 ]
 
-export default function DocsSidebar({ activeSection }: { activeSection: string }) {
+export default function DocsSidebar({ activeSection, isMobile }: { activeSection: string, isMobile?: boolean }) {
   return (
     <aside style={{
-      width: '230px',
-      height: 'calc(100vh - 64px)',
-      position: 'sticky',
-      top: '64px',
-      overflowY: 'auto',
-      background: '#F7F5F2',
-      borderRight: '1px solid #E0DED9',
-      padding: '32px 16px',
+      width: isMobile ? '100%' : '230px',
+      height: isMobile ? 'auto' : 'calc(100vh - 64px)',
+      position: isMobile ? 'relative' : 'sticky',
+      top: isMobile ? '0' : '64px',
+      overflowY: isMobile ? 'visible' : 'auto',
+      background: isMobile ? 'transparent' : '#F7F5F2',
+      borderRight: isMobile ? 'none' : '1px solid #E0DED9',
+      padding: isMobile ? '0' : '32px 16px',
       flexShrink: 0,
       display: 'flex',
       flexDirection: 'column',
       gap: '32px'
-    }} className="docs-sidebar">
+    }} className={isMobile ? "" : "docs-sidebar"}>
       {SECTIONS.map(section => (
         <div key={section.title}>
           <div style={{

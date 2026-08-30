@@ -48,62 +48,72 @@ export default function VoiceFilters({
   )
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      gap: '16px',
+      background: '#FFFFFF',
+      padding: '16px 20px',
+      borderRadius: '20px',
+      border: '1px solid #E0DED9',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+    }}>
       
-      {/* Top row: Search */}
-      <div style={{ position: 'relative', maxWidth: '420px', width: '100%' }}>
-        <Search size={16} color="#9A9A9A" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
-        <input 
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search voices..."
-          style={{
-            width: '100%',
-            height: '48px',
-            background: '#FFFFFF',
-            border: '1px solid #E0DED9',
-            borderRadius: '9999px',
-            paddingLeft: '44px',
-            paddingRight: '16px',
-            fontFamily: BODY,
-            fontSize: '15px',
-            color: '#0D0D0D',
-            outline: 'none',
-            boxSizing: 'border-box'
-          }}
-        />
-      </div>
+      <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
+        {/* Search */}
+        <div style={{ position: 'relative', flex: '1 1 240px', minWidth: '240px' }}>
+          <Search size={16} color="#9A9A9A" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }} />
+          <input 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search voices..."
+            style={{
+              width: '100%',
+              height: '40px',
+              background: '#F7F5F2',
+              border: '1px solid transparent',
+              borderRadius: '10px',
+              paddingLeft: '44px',
+              paddingRight: '16px',
+              fontFamily: BODY,
+              fontSize: '14px',
+              color: '#0D0D0D',
+              outline: 'none',
+              boxSizing: 'border-box',
+              transition: 'border 150ms ease'
+            }}
+            onFocus={e => e.target.style.border = '1px solid #E0DED9'}
+            onBlur={e => e.target.style.border = '1px solid transparent'}
+          />
+        </div>
 
-      {/* Filter Rows Container */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        
         {/* Language Row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflowX: 'auto', paddingBottom: '4px', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', msOverflowStyle: 'none', scrollbarWidth: 'none', flex: '2 1 400px' }}>
           <span style={{ fontFamily: MONO, fontSize: '10px', color: '#9A9A9A', letterSpacing: '0.12em', textTransform: 'uppercase', marginRight: '4px' }}>LANG</span>
           {LANGUAGES.map(lang => (
             <Pill key={lang} label={lang} active={activeLang === lang} onClick={() => setActiveLang(lang)} />
           ))}
         </div>
+      </div>
 
-        {/* Attribute Rows (Gender & Style) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '32px', flexWrap: 'wrap' }}>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflowX: 'auto', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
-            <span style={{ fontFamily: MONO, fontSize: '10px', color: '#9A9A9A', letterSpacing: '0.12em', textTransform: 'uppercase', marginRight: '4px' }}>GENDER</span>
-            {GENDERS.map(gen => (
-              <Pill key={gen} label={gen} active={activeGender === gen} onClick={() => setActiveGender(gen)} />
-            ))}
-          </div>
+      <div style={{ height: '1px', background: '#E0DED9', width: '100%' }} />
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', overflowX: 'auto', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
-            <span style={{ fontFamily: MONO, fontSize: '10px', color: '#9A9A9A', letterSpacing: '0.12em', textTransform: 'uppercase', marginRight: '4px' }}>STYLE</span>
-            {STYLES.map(style => (
-              <Pill key={style} label={style} active={activeStyle === style} onClick={() => setActiveStyle(style)} />
-            ))}
-          </div>
-
+      <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', alignItems: 'center' }}>
+        {/* Gender Row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+          <span style={{ fontFamily: MONO, fontSize: '10px', color: '#9A9A9A', letterSpacing: '0.12em', textTransform: 'uppercase', marginRight: '4px' }}>GENDER</span>
+          {GENDERS.map(gen => (
+            <Pill key={gen} label={gen} active={activeGender === gen} onClick={() => setActiveGender(gen)} />
+          ))}
         </div>
 
+        {/* Style Row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflowX: 'auto', msOverflowStyle: 'none', scrollbarWidth: 'none' }}>
+          <span style={{ fontFamily: MONO, fontSize: '10px', color: '#9A9A9A', letterSpacing: '0.12em', textTransform: 'uppercase', marginRight: '4px' }}>STYLE</span>
+          {STYLES.map(style => (
+            <Pill key={style} label={style} active={activeStyle === style} onClick={() => setActiveStyle(style)} />
+          ))}
+        </div>
       </div>
 
     </div>
