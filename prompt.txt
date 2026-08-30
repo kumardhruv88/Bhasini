@@ -1,1092 +1,1065 @@
 You are a senior frontend engineer building "Bhasini."
-All previous components exist. Now build the AgentConversationPage.
+All previous pages exist and work. Now build:
+  1. PricingPage (/pricing) — 4 tiers with INR pricing
+  2. LoginPage (/login) — clean auth form
+  3. SignupPage (/signup) — clean auth form
 
-REFERENCE TYPOGRAPHY (from ElevenLabs screenshot):
-  - Thin, sharp, elegant — NOT bold heavy text
-  - Large numbers/headings: Plus Jakarta Sans, weight 300-400
-  - Body: DM Sans, weight 300-400, generous line-height
-  - Labels: JetBrains Mono, tiny, spaced, uppercase
-  - Everything breathes with whitespace
-  - Color: mostly #0D0D0D on white, minimal color accents
+TYPOGRAPHY REFERENCE (same as conversation page):
+  Headlines: Plus Jakarta Sans, weight 300-400, thin elegant
+  Body: DM Sans, weight 300-400, generous line-height
+  Labels: JetBrains Mono, tiny, spaced, uppercase
+  All inline styles + CSS variables only — NO Tailwind
 
 ════════════════════════════════════════════════════════════════
-ALSO FIX: Agent Detail Modal (AgentDetailModal.tsx)
-Make it more informative, stylish, premium — not static.
+PART A: PricingPage
+File: src/pages/PricingPage/index.tsx
 ════════════════════════════════════════════════════════════════
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PART A: REDESIGNED AgentDetailModal.tsx
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Completely replace AgentDetailModal.tsx with this design:
-
-OVERLAY:
-  position fixed, inset 0
-  background rgba(13,13,13,0.60)
-  backdrop-filter blur(12px) saturate(160%)
-  z-index 400
-  display flex, align-items center, justify-content center
-  padding 24px
-
-MODAL PANEL:
-  background white
-  border-radius 28px
-  width 100%, max-width 580px
-  max-height 88vh
-  overflow-y auto
-  overflow-x hidden
-  position relative
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,0.06),
-    0 32px 80px rgba(0,0,0,0.18),
-    0 8px 24px rgba(0,0,0,0.08)
-  
-  framer-motion:
-    initial: opacity 0, scale 0.93, y 24
-    animate: opacity 1, scale 1, y 0
-    exit: opacity 0, scale 0.95, y 12
-    transition: duration 0.4, ease [0.16,1,0.3,1]
-
-MODAL HERO BAND (top section — gradient bg):
-  background: linear-gradient(160deg,
-    {agent.orbGradient[0]}14 0%,
-    {agent.orbGradient[1]}08 50%,
-    rgba(247,245,242,0) 100%)
-  padding: 32px 32px 24px
-  position: relative
-  border-radius: 28px 28px 0 0
-
-  CLOSE BUTTON:
-    position absolute, top 20px, right 20px
-    width 36px, height 36px
-    border-radius 50%
-    background rgba(0,0,0,0.06)
-    border none, cursor pointer
-    display flex, align-items center, justify-content center
-    color #6B6B6B
-    transition background 150ms
-    hover: background rgba(0,0,0,0.10)
-    <X size={16}/>
-
-  ORB + NAME ROW:
-    display flex, align-items center, gap 20px
-    margin-bottom 20px
-
-    ORB (large, 80px):
-      width 80px, height 80px, border-radius 50%
-      flex-shrink 0
-      background: radial-gradient(circle at 32% 28%,
-        {gradient stops from agent.orbGradient})
-        Example: radial-gradient(circle at 32% 28%,
-          {agent.orbGradient[0]}FF 0%,
-          {agent.orbGradient[1]}FF 50%,
-          {agent.orbGradient[2]}FF 100%)
-      box-shadow:
-        0 8px 32px {agent.orbGradient[0]}40,
-        inset 0 1px 0 rgba(255,255,255,0.3)
-      position relative
-      
-      Inner highlight:
-        position absolute, top 12%, left 18%
-        width 32%, height 26%
-        border-radius 50%
-        background radial-gradient(circle,
-          rgba(255,255,255,0.6) 0%, transparent)
-        filter blur(3px)
-      
-      framer-motion animate:
-        y [0, -6, 0], scale [1, 1.03, 1]
-        transition duration 4, repeat Infinity, ease easeInOut
-
-    NAME + BADGE COLUMN:
-      display flex, flex-direction column, gap 10px
-
-      Agent name:
-        font-family 'Plus Jakarta Sans'
-        font-size: 28px
-        font-weight: 300   ← THIN, elegant
-        letter-spacing: -0.02em
-        color: #0D0D0D
-        line-height: 1
-
-      Industry badge:
-        display inline-flex, align-items center, gap 6px
-        padding: 5px 12px
-        background: rgba(0,0,0,0.05)
-        border-radius: 9999px
-        width: fit-content
-        
-        Colored dot:
-          width 7px, height 7px, border-radius 50%
-          background: {agent.orbGradient[0]}
-        
-        Text:
-          font-family 'DM Sans'
-          font-size: 12px, font-weight: 500
-          color: #6B6B6B
-          letter-spacing: 0.02em
-
-  QUICK STATS ROW (3 stats inline):
-    display grid, grid-template-columns repeat(3, 1fr)
-    gap 1px
-    background #F0EFED
-    border-radius 14px
-    overflow hidden
-    
-    Each stat cell:
-      background white, padding 14px 16px
-      display flex, flex-direction column, gap 3px
-      
-      Value:
-        font-family 'Plus Jakarta Sans'
-        font-size: 20px, font-weight: 600
-        color: #0D0D0D, letter-spacing: -0.02em
-      
-      Label:
-        font-family 'DM Sans'
-        font-size: 10px, font-weight: 500
-        color: #9E9E9E, letter-spacing: 0.06em
-        text-transform: uppercase
-    
-    Stats per industry:
-      health-medical: 
-        {value:'< 1s', label:'Response'} | {value:'4.9★', label:'Rating'} | {value:'22k+', label:'Sessions'}
-      tourism:
-        {value:'3.2s', label:'Avg. Call'} | {value:'4.8★', label:'Rating'} | {value:'8k+', label:'Sessions'}
-      customer-support:
-        {value:'< 800ms', label:'Latency'} | {value:'4.7★', label:'CSAT'} | {value:'77k+', label:'Calls'}
-      real-estate:
-        {value:'< 1.2s', label:'Response'} | {value:'4.8★', label:'Rating'} | {value:'5k+', label:'Leads'}
-      travel:
-        {value:'< 1s', label:'Response'} | {value:'4.9★', label:'Rating'} | {value:'12k+', label:'Trips'}
-      mental-health:
-        {value:'< 1s', label:'Response'} | {value:'5.0★', label:'Rating'} | {value:'3k+', label:'Sessions'}
-
-MODAL BODY SECTION:
-  padding 0 32px 32px
-
-  DESCRIPTION:
-    margin-top 24px, margin-bottom 28px
-    font-family 'DM Sans'
-    font-size: 15px, font-weight: 300
-    line-height: 1.75
-    color: #4A4A4A
-    letter-spacing: 0.005em
-
-  DIVIDER LINE:
-    height 1px, background #F0EFED, margin-bottom 28px
-
-  SECTION: "SPEAKS"
-    Label style (reuse for all section labels):
-      font-family 'JetBrains Mono'
-      font-size: 9px, font-weight: 500
-      letter-spacing: 0.18em, text-transform: uppercase
-      color: #9E9E9E, margin-bottom: 12px
-    
-    Language chips — display flex, gap 8px, flex-wrap wrap:
-      Each chip:
-        padding: 7px 16px
-        border-radius: 9999px
-        border: 1.5px solid {agent.orbGradient[0]}35
-        background: {agent.orbGradient[0]}08
-        
-        font-family: 'DM Sans'
-        font-size: 13px, font-weight: 500
-        color: {agent.orbGradient[0]}
-        
-        framer-motion whileHover:
-          scale 1.04
-          background {agent.orbGradient[0]}15
-          transition duration 0.15
-
-  SECTION: "TRY ASKING" (margin-top 28px)
-    Same label as above.
-    
-    Questions list — display flex, flex-direction column, gap 0:
-      Each question item:
-        display flex, align-items center, gap 14px
-        padding: 14px 0
-        border-bottom: 1px solid #F5F5F5
-        cursor pointer
-        
-        transition background 150ms
-        hover: background #FAFAFA
-        border-radius 8px
-        padding-left 8px, padding-right 8px
-        
-        Left icon circle:
-          width 28px, height 28px, border-radius 50%
-          background: {agent.orbGradient[0]}10
-          border: 1px solid {agent.orbGradient[0]}20
-          display flex, align-items center, justify-content center
-          flex-shrink 0
-          
-          <MessageCircle size={13}/> 
-          color: {agent.orbGradient[0]}
-        
-        Question text:
-          font-family: 'DM Sans'
-          font-size: 14px, font-weight: 400
-          color: #2A2A2A, line-height: 1.4
-        
-        Right arrow (shows on hover):
-          margin-left auto, flex-shrink 0
-          <ArrowRight size={14}/> color #C8C5C0
-          framer-motion: opacity 0 → 1 on parent hover
-
-  SECTION: "CAPABILITIES" (margin-top 28px)
-    Same label as above.
-    
-    Capabilities grid:
-      display grid
-      grid-template-columns repeat(2, 1fr)
-      gap 8px
-      margin-top 12px
-      
-      Each capability:
-        display flex, align-items center, gap 10px
-        padding: 10px 14px
-        background: #FAFAFA
-        border: 1px solid #F0EFED
-        border-radius: 10px
-        
-        Check icon:
-          width 18px, height 18px, border-radius 50%
-          background: {agent.orbGradient[0]}12
-          display flex, align-items center, justify-content center
-          flex-shrink 0
-          <Check size={10}/> color {agent.orbGradient[0]}
-        
-        Text:
-          font-family 'DM Sans'
-          font-size: 12px, font-weight: 500
-          color: #4A4A4A
-
-  SAMPLE CONVERSATION PREVIEW (new section, margin-top 28px):
-    Label: "PREVIEW"
-    
-    A small mock conversation showing what this agent sounds like:
-    Small rounded card, background #FAFAFA, border-radius 16px
-    padding 16px, border 1px solid #F0EFED
-    
-    Based on agent.industry, show 2 exchanges:
-    
-    health-medical:
-      User: "मुझे सिरदर्द है"
-      Agent: "समझा। कितने समय से है? क्या आपने कोई दवा ली है?"
-    
-    tourism:
-      User: "Hampi ke baare mein batao"
-      Agent: "Hampi ek UNESCO site hai — 500+ temples, stunning ruins!"
-    
-    customer-support:
-      User: "Mujhe refund chahiye"
-      Agent: "ज़रूर। Order number share karein, main check karta hoon."
-    
-    real-estate:
-      User: "2BHK ka rate kya hai?"
-      Agent: "Noida sector 62 mein ₹65-75 lakh range hai abhi."
-    
-    travel:
-      User: "Ladakh trip plan karo"
-      Agent: "10 din ka plan: Day 1-2 Leh, Day 3-4 Pangong..."
-    
-    mental-health:
-      User: "Main bahut stressed hoon"
-      Agent: "Sunita hoon main. Aap safe hain. Kya share karna chahenge?"
-    
-    Each message row:
-      display flex, gap 8px, margin-bottom 10px
-      
-      For user message (right-aligned):
-        justify-content flex-end
-        Bubble: background #0D0D0D, color white
-          padding 8px 14px, border-radius 16px 16px 4px 16px
-          font-size 12px, font-family 'DM Sans', font-weight 400
-      
-      For agent message (left-aligned):
-        Colored dot (6px, agent gradient color[0])
-        Bubble: background white, border 1px solid #E8E8E8
-          padding 8px 14px, border-radius 16px 16px 16px 4px
-          font-size 12px, font-family 'DM Sans', font-weight 400
-          color #2A2A2A
-    
-    Animate-in on mount:
-      stagger each message 200ms delay
-      each: initial opacity 0, y 8
-        animate opacity 1, y 0
-        transition duration 0.4
-
-MODAL FOOTER:
-  padding 20px 32px 32px
-  border-top 1px solid #F5F5F5
-  display flex, flex-direction column, gap 12px
-
-  PRIMARY BUTTON — "Start Conversation":
-    width 100%, height 52px
-    background #0D0D0D
-    border none, border-radius 9999px
-    display flex, align-items center, justify-content center, gap 10px
-    cursor pointer
-    
-    LEFT: Pulsing green dot:
-      width 8px, height 8px, border-radius 50%
-      background #22C55E
-      framer-motion animate: scale [1,1.4,1], opacity [1,0.5,1]
-        transition duration 1.8, repeat Infinity
-    
-    TEXT: "Start Conversation"
-      font-family 'Plus Jakarta Sans'
-      font-size: 15px, font-weight: 500
-      color: white, letter-spacing: -0.01em
-    
-    RIGHT: <Phone size={15}/> color white
-    
-    framer-motion whileHover: scale 1.01, backgroundColor '#1A1A1A'
-    whileTap: scale 0.99
-    
-    onClick: onClose() then navigate to /agents/:id/talk
-
-  SECONDARY ROW — two buttons side by side:
-    display flex, gap 8px
-    
-    "View Docs" button:
-      flex 1, height 44px
-      background transparent
-      border 1.5px solid #E0DED9
-      border-radius 9999px
-      font-size 14px, font-weight 400
-      font-family 'DM Sans', color #6B6B6B
-      cursor pointer
-      hover: border-color #C8C5C0, color #0D0D0D
-    
-    "Share" button:
-      width 44px, height 44px
-      border 1.5px solid #E0DED9
-      border-radius 50%
-      background transparent
-      cursor pointer
-      display flex, align-items center, justify-content center
-      <Share2 size={15}/> color #6B6B6B
-      hover: border-color #C8C5C0
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PART B: AgentConversationPage — FULL SCREEN
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-File: src/pages/AgentConversationPage/index.tsx
-
-This is a FULL SCREEN experience — NO navbar visible.
-Route: /agents/:agentId/talk
-
-STATE MACHINE:
-  type CallState = 'idle' | 'connecting' | 'active' | 'ended'
-  
-  const { agentId } = useParams()
+STATE:
+  const [billing, setBilling] = useState<'monthly'|'annual'>('monthly')
+  const [hoveredTier, setHoveredTier] = useState<string|null>(null)
   const navigate = useNavigate()
-  const agent = agents.find(a => a.id === agentId)
-  
-  const [callState, setCallState] = useState<CallState>('idle')
-  const [activeOrb, setActiveOrb] = useState<'user'|'agent'|null>(null)
-  const [isMuted, setIsMuted] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState(
-    agent?.languages[0] || 'Hindi'
-  )
-  const [langDropOpen, setLangDropOpen] = useState(false)
-  const [transcript, setTranscript] = useState<TranscriptMessage[]>([])
-  const [sessionTime, setSessionTime] = useState(0)
-  const transcriptRef = useRef<HTMLDivElement>(null)
 
-  interface TranscriptMessage {
-    id: number
-    speaker: 'user' | 'agent'
+PRICING DATA:
+  interface PricingTier {
+    id: string
+    name: string
+    badge?: string
+    monthlyPrice: number | null
+    annualPrice: number | null
+    description: string
+    cta: string
+    ctaVariant: 'primary' | 'ghost' | 'accent'
+    highlighted: boolean
+    features: PricingFeature[]
+    limits: { calls: string; languages: string; latency: string; voices: string }
+  }
+  
+  interface PricingFeature {
     text: string
-    timestamp: number
-    isFinal: boolean
+    included: boolean
+    note?: string
   }
 
-SIMULATED CONVERSATION (for demo — real SDK added later):
-  When callState becomes 'active', start automated demo:
-  
-  const demoScript based on agent.industry:
-    health-medical: [
-      {speaker:'user', text:'Doctor sahab, mujhe teen dino se bukhaar hai', delay:2000, duration:3000},
-      {speaker:'agent', text:'Samjha. Kitna temperature hai? Kya aapne paracetamol li hai?', delay:1000, duration:3500, isTyping:true},
-      {speaker:'user', text:'102 degree hai. Ek tablet li thi subah.', delay:800, duration:2500},
-      {speaker:'agent', text:'102 pe concern hona chahiye. Kya body mein dard hai ya throat mein kuch feel ho raha hai?', delay:1000, duration:4000, isTyping:true},
-    ]
-    
-    customer-support: [
-      {speaker:'user', text:'Mujhe refund chahiye mere order ka', delay:2000, duration:2800},
-      {speaker:'agent', text:'Zaroor main madad karunga. Kripya apna order number share karein.', delay:1000, duration:3200, isTyping:true},
-      {speaker:'user', text:'Order number hai EL4543490', delay:800, duration:2000},
-      {speaker:'agent', text:'Dhanyavaad. Maine aapka order dekha — refund process shuru kar diya hai. 3-5 din mein credit ho jayega.', delay:1200, duration:4500, isTyping:true},
-    ]
-    
-    travel: [
-      {speaker:'user', text:'Mujhe Ladakh jaana hai November mein', delay:2000, duration:3000},
-      {speaker:'agent', text:'Arrey November mein Ladakh bohot cold hoga — minus 20 degree! Main suggest karunga October ya June-September.', delay:1000, duration:4000, isTyping:true},
-      {speaker:'user', text:'Toh October mein 7 days ka plan banao', delay:800, duration:2500},
-      {speaker:'agent', text:'Perfect! Day 1-2: Leh acclimatization. Day 3: Nubra Valley by Khardung La. Day 4-5: Pangong Tso...', delay:1200, duration:5000, isTyping:true},
-    ]
-    
-    Default for all others:
-    [
-      {speaker:'user', text:'Namaste, main aapki help chahta hoon', delay:2000, duration:2500},
-      {speaker:'agent', text:'Namaste! Main yahan hoon aapki poori madad karne ke liye. Kya chahiye aapko?', delay:1000, duration:3500, isTyping:true},
-      {speaker:'user', text:'Mujhe kuch important jaankari chahiye', delay:800, duration:2500},
-      {speaker:'agent', text:'Zaroor! Batayein kya jaanna chahte hain — main apni poori koshish karunga.', delay:1000, duration:3500, isTyping:true},
-    ]
-  
-  Run demo loop same as InlineOrbDemo — loop after completion.
-
-SESSION TIMER (when callState === 'active'):
-  useEffect interval, increments every second
-  Display as MM:SS format
+  const tiers: PricingTier[] = [
+    {
+      id: 'free',
+      name: 'Free',
+      badge: undefined,
+      monthlyPrice: 0,
+      annualPrice: 0,
+      description: 'Perfect for exploring Bhasini and building your first voice agent.',
+      cta: 'Get started free',
+      ctaVariant: 'ghost',
+      highlighted: false,
+      limits: {
+        calls: '500 calls/month',
+        languages: '3 languages',
+        latency: 'Standard',
+        voices: '10 voices',
+      },
+      features: [
+        { text: '500 voice agent calls', included: true },
+        { text: '3 Indian languages', included: true },
+        { text: 'BhasiniCreative basic access', included: true },
+        { text: 'Community support', included: true },
+        { text: 'API access', included: true },
+        { text: 'Custom voice cloning', included: false },
+        { text: 'Priority latency (<800ms)', included: false },
+        { text: 'Analytics dashboard', included: false },
+        { text: 'Phone number deployment', included: false },
+        { text: 'WhatsApp integration', included: false },
+      ],
+    },
+    {
+      id: 'starter',
+      name: 'Starter',
+      badge: undefined,
+      monthlyPrice: 999,
+      annualPrice: 799,
+      description: 'For indie developers and small teams building production agents.',
+      cta: 'Start building',
+      ctaVariant: 'ghost',
+      highlighted: false,
+      limits: {
+        calls: '5,000 calls/month',
+        languages: '5 languages',
+        latency: '< 1s',
+        voices: '50 voices',
+      },
+      features: [
+        { text: '5,000 voice agent calls', included: true },
+        { text: '5 Indian languages', included: true },
+        { text: 'BhasiniCreative full access', included: true },
+        { text: 'Email support', included: true },
+        { text: 'API access + webhooks', included: true },
+        { text: 'Custom voice cloning', included: true, note: '3 voices' },
+        { text: 'Priority latency (<800ms)', included: false },
+        { text: 'Analytics dashboard', included: true },
+        { text: 'Phone number deployment', included: false },
+        { text: 'WhatsApp integration', included: false },
+      ],
+    },
+    {
+      id: 'growth',
+      name: 'Growth',
+      badge: 'Most Popular',
+      monthlyPrice: 4999,
+      annualPrice: 3999,
+      description: 'For growing startups deploying agents at scale across India.',
+      cta: 'Start free trial',
+      ctaVariant: 'primary',
+      highlighted: true,
+      limits: {
+        calls: '50,000 calls/month',
+        languages: '8+ languages',
+        latency: '< 800ms',
+        voices: 'Unlimited',
+      },
+      features: [
+        { text: '50,000 voice agent calls', included: true },
+        { text: 'All 8+ Indian languages', included: true },
+        { text: 'BhasiniCreative + BhasiniAgents', included: true },
+        { text: 'Priority support + Slack', included: true },
+        { text: 'Full API + advanced webhooks', included: true },
+        { text: 'Custom voice cloning', included: true, note: 'Unlimited' },
+        { text: 'Flash latency (< 800ms)', included: true },
+        { text: 'Advanced analytics + eval kit', included: true },
+        { text: 'Phone number deployment', included: true, note: '5 numbers' },
+        { text: 'WhatsApp integration', included: true },
+      ],
+    },
+    {
+      id: 'enterprise',
+      name: 'Enterprise',
+      badge: undefined,
+      monthlyPrice: null,
+      annualPrice: null,
+      description: 'Custom infrastructure for large enterprises, banks, and governments.',
+      cta: 'Talk to sales',
+      ctaVariant: 'ghost',
+      highlighted: false,
+      limits: {
+        calls: 'Unlimited',
+        languages: 'All + custom',
+        latency: 'Ultra-low SLA',
+        voices: 'Custom models',
+      },
+      features: [
+        { text: 'Unlimited calls + SLA guarantee', included: true },
+        { text: 'All languages + custom dialect', included: true },
+        { text: 'Dedicated infrastructure', included: true },
+        { text: '24/7 dedicated support', included: true },
+        { text: 'Custom API + on-premise', included: true },
+        { text: 'Custom voice model training', included: true },
+        { text: 'Sub-500ms guaranteed latency', included: true },
+        { text: 'Enterprise analytics + SOC2', included: true },
+        { text: 'Unlimited phone numbers', included: true },
+        { text: 'WhatsApp + all channels', included: true },
+      ],
+    },
+  ]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-PAGE LAYOUT — THREE PANELS
+PAGE LAYOUT:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Full screen: width 100vw, height 100vh
-Background: #F7F5F2
-Display: flex
-overflow: hidden
+OUTER:
+  padding-top 64px (nav height)
+  background #F7F5F2
+  min-height 100vh
 
-PANEL 1 — LEFT SIDEBAR (280px wide, fixed):
-  height 100vh
-  background white
-  border-right 1px solid #F0EFED
-  display flex, flex-direction column
-  flex-shrink 0
+SECTION 1 — PAGE HEADER:
+  max-width 1280px, margin 0 auto
+  padding 80px 32px 64px
+  text-align center
+
+  Eyebrow label:
+    display inline-flex, align-items center, gap 8px
+    padding 5px 16px 5px 8px
+    background rgba(255,107,53,0.08)
+    border 1px solid rgba(255,107,53,0.18)
+    border-radius 9999px
+    margin-bottom 24px
+    
+    Dot: 7px, bg #FF6B35, pulsing animation
+    Text: "Simple, transparent pricing"
+      font-family 'DM Sans', font-size 13px
+      font-weight 600, color #FF6B35
+
+  H1:
+    font-family 'Plus Jakarta Sans'
+    font-size clamp(40px, 6vw, 72px)
+    font-weight 300
+    letter-spacing -0.03em
+    color #0D0D0D
+    line-height 1.05
+    margin-bottom 20px
+    Text: "Pay as you grow"
+
+  Subtitle:
+    font-family 'DM Sans'
+    font-size 18px, font-weight 300
+    color #6B6B6B, line-height 1.65
+    max-width 480px, margin 0 auto 40px
+
+  BILLING TOGGLE:
+    display inline-flex
+    background #EFEFED
+    border-radius 9999px
+    padding 4px
+    gap 2px
+    
+    Each button:
+      padding 10px 24px
+      border-radius 9999px
+      border none, cursor pointer
+      font-family 'DM Sans', font-size 14px
+      transition all 200ms ease
+      position relative
+      
+      Active:
+        background white
+        color #0D0D0D, font-weight 600
+        box-shadow 0 1px 4px rgba(0,0,0,0.08)
+      
+      Inactive:
+        background transparent
+        color #6B6B6B, font-weight 400
+    
+    Annual button has badge:
+      After the text "Annual", small pill:
+        margin-left 6px
+        background linear-gradient(90deg, #FF6B35, #FF3CAC)
+        color white
+        font-size 10px, font-weight 700
+        padding 2px 8px, border-radius 9999px
+        text: "Save 20%"
+
+SECTION 2 — PRICING CARDS GRID:
+  max-width 1280px, margin 0 auto
+  padding 0 32px 80px
+  display grid
+  grid-template-columns repeat(4, 1fr)
+  gap 16px
+  align-items start
   
-  SIDEBAR HEADER (64px):
-    padding 0 20px
-    display flex, align-items center, justify-content space-between
-    border-bottom 1px solid #F0EFED
-    
-    Left: Back button:
-      display flex, align-items center, gap 8px
-      cursor pointer
-      onClick: navigate('/agents')
-      
-      <ArrowLeft size={16}/> color #6B6B6B
-      Text: "Agents"
-        font-family 'DM Sans', font-size 13px
-        font-weight 500, color #6B6B6B
-        hover: color #0D0D0D
-    
-    Right: Session timer (only when active):
-      font-family 'JetBrains Mono', font-size 13px
-      color #FF6B35, font-weight 500
-      text: formatTime(sessionTime) e.g. "02:34"
-      
-      AnimatePresence — only renders when callState==='active'
+  Below 1024px: grid-template-columns repeat(2, 1fr)
+  Below 640px: grid-template-columns 1fr
 
-  AGENT INFO SECTION:
-    padding 24px 20px
-    border-bottom 1px solid #F0EFED
+  Each PricingCard (motion.div):
+    framer-motion:
+      initial: opacity 0, y 24
+      animate: opacity 1, y 0
+      transition: duration 0.5, delay index*0.08
     
-    Small orb (48px) + name + status:
-      display flex, align-items center, gap 14px
-      margin-bottom 16px
+    onMouseEnter: setHoveredTier(tier.id)
+    onMouseLeave: setHoveredTier(null)
+    
+    NON-HIGHLIGHTED CARD STYLE:
+      background white
+      border 1px solid #E0DED9
+      border-radius 24px
+      padding 28px
+      position relative
+      transition all 250ms ease
       
-      Orb: 48px × 48px, same gradient as agent
-        float animation y [0,-4,0] duration 3.5 repeat Infinity
+      When hovered:
+        border-color #C8C5C0
+        box-shadow 0 8px 32px rgba(0,0,0,0.08)
+        transform translateY(-3px)
+    
+    HIGHLIGHTED CARD (Growth tier) STYLE:
+      background #0D0D0D
+      border 1px solid #0D0D0D
+      border-radius 24px
+      padding 28px
+      position relative
       
-      Right column:
-        Agent name:
+      All text inside: white versions
+      transform: translateY(-8px) (elevated above others)
+      box-shadow 0 24px 64px rgba(0,0,0,0.20)
+      
+      When hovered: transform translateY(-12px)
+
+    CARD HEADER:
+      margin-bottom 24px
+      
+      Top row (tier name + badge):
+        display flex, align-items center, gap 10px
+        margin-bottom 12px
+        
+        Tier name:
           font-family 'Plus Jakarta Sans'
-          font-size 16px, font-weight 400
-          color #0D0D0D, letter-spacing -0.01em
+          font-size 18px, font-weight 500
+          color: white if highlighted, #0D0D0D if not
+          letter-spacing -0.01em
         
-        Status (changes with callState):
-          display flex, align-items center, gap 5px
-          font-family 'DM Sans', font-size 11px, color #9E9E9E
+        Badge (if exists — "Most Popular"):
+          padding 3px 10px
+          background rgba(255,107,53,1)
+          color white
+          font-size 10px, font-weight 700
+          border-radius 9999px
+          font-family 'DM Sans'
+          letter-spacing 0.03em
+      
+      PRICE DISPLAY:
+        margin-bottom 10px
+        
+        For FREE tier:
+          Large "₹0"
+            font-family 'Plus Jakarta Sans'
+            font-size 52px, font-weight 300
+            color: white if highlighted, #0D0D0D if not
+            letter-spacing -0.04em
+            line-height 1
           
-          'idle': gray dot + "Ready"
-          'connecting': yellow pulsing dot + "Connecting..."
-          'active': green pulsing dot + "Live"
-          'ended': gray dot + "Ended"
-    
-    Industry + language badges:
-      display flex, gap 6px, flex-wrap wrap
+          Below: "Free forever"
+            font-size 13px, color #9E9E9E (or rgba(255,255,255,0.5))
+        
+        For PAID tiers (monthly/annual toggle):
+          AnimatePresence mode="wait" key={billing}:
+            motion.div:
+              initial: opacity 0, y 8
+              animate: opacity 1, y 0
+              exit: opacity 0, y -8
+              transition: duration 0.2
+          
+          Price row:
+            display flex, align-items baseline, gap 4px
+            
+            Currency symbol "₹":
+              font-family 'Plus Jakarta Sans'
+              font-size 22px, font-weight 400
+              color #FF6B35 if not highlighted
+              color #FF6B35 if highlighted (stays orange)
+            
+            Amount:
+              font-family 'Plus Jakarta Sans'
+              font-size 52px, font-weight 300
+              letter-spacing -0.04em, line-height 1
+              color: white if highlighted, #0D0D0D if not
+              text: billing==='monthly' ? tier.monthlyPrice : tier.annualPrice
+            
+            Per month:
+              font-size 13px, font-weight 400
+              color: rgba(255,255,255,0.5) if highlighted, #9E9E9E if not
+              align-self flex-end, padding-bottom 8px
+              text: "/mo"
+          
+          If annual billing, show savings note:
+            font-size 11px, color: rgba(255,107,53,0.9)
+            text: "Save ₹{(tier.monthlyPrice - tier.annualPrice) * 12}/yr"
+        
+        For ENTERPRISE tier:
+          Large text "Custom"
+            font-family 'Plus Jakarta Sans'
+            font-size 52px, font-weight 300
+            letter-spacing -0.04em, color: white if h, #0D0D0D if not
+          Below: "Contact for pricing"
+            font-size 13px, color #9E9E9E or rgba(255,255,255,0.5)
       
-      Industry badge:
-        font-size 10px, padding 3px 10px
-        background #EFEFED, border-radius 9999px
-        color #6B6B6B, font-family 'DM Sans', font-weight 500
-      
-      Language badge (active language):
-        font-size 10px, padding 3px 10px
-        background rgba(255,107,53,0.08)
-        border 1px solid rgba(255,107,53,0.20)
-        border-radius 9999px
-        color #FF6B35, font-family 'DM Sans', font-weight 600
+      Description:
+        font-family 'DM Sans'
+        font-size 13px, font-weight 300
+        line-height 1.6
+        color: rgba(255,255,255,0.65) if highlighted, #6B6B6B if not
 
-  LANGUAGE SELECTOR:
-    padding 16px 20px
-    border-bottom 1px solid #F0EFED
-    
-    Label: "LANGUAGE"
-      font-family 'JetBrains Mono', font-size 9px
-      letter-spacing 0.16em, color #9E9E9E
-      margin-bottom 10px
-    
-    Language buttons (one per agent language):
-      display flex, flex-direction column, gap 4px
+    LIMIT PILLS (4 quick stats):
+      display grid, grid-template-columns 1fr 1fr
+      gap 6px, margin-bottom 24px
       
-      Each:
-        padding 9px 12px, border-radius 10px
-        cursor pointer, display flex, align-items center, gap 10px
-        transition background 150ms
+      Each limit pill:
+        padding 8px 10px
+        border-radius 10px
+        background: rgba(255,255,255,0.07) if highlighted
+                    #FAFAFA if not
+        border: 1px solid rgba(255,255,255,0.10) if highlighted
+                1px solid #F0EFED if not
         
-        Active language:
-          background rgba(255,107,53,0.08)
-          border 1px solid rgba(255,107,53,0.15)
+        Value:
+          font-family 'DM Sans', font-size 11px, font-weight 700
+          color: white if highlighted, #0D0D0D if not
+          margin-bottom 1px
         
-        Inactive:
-          background transparent
-          border 1px solid transparent
-          hover: background #F5F5F5
-        
-        Left: flag emoji (🇮🇳 for all Indian langs)
-        
-        Language name:
-          font-family 'DM Sans', font-size 13px
-          font-weight: 500 when active, 400 when not
-          color: #FF6B35 when active, #4A4A4A when not
-        
-        Right check (active only):
-          <Check size={12}/> color #FF6B35
+        Label:
+          font-family 'DM Sans', font-size 9px, font-weight 400
+          color: rgba(255,255,255,0.45) if highlighted, #9E9E9E if not
 
-  TRANSCRIPT SECTION (flex 1, scrollable):
-    flex 1, overflow-y auto
-    padding 16px 20px
-    
-    Label: "TRANSCRIPT"
-      font-family 'JetBrains Mono', font-size 9px
-      letter-spacing 0.16em, color #9E9E9E
-      margin-bottom 14px
-      position sticky, top 0
-      background white, padding-bottom 8px
-      z-index 1
-    
-    When no messages:
-      Centered placeholder:
-        font-family 'DM Sans', font-size 13px
-        color #C8C5C0, text-align center, margin-top 24px
-        Text: "Transcript will appear here\nduring your conversation"
-        white-space pre-line
-    
-    Message list (AnimatePresence):
+    CTA BUTTON:
+      width 100%, height 48px
+      border-radius 9999px
+      cursor pointer, border none
+      font-family 'DM Sans', font-size 14px, font-weight 600
+      margin-bottom 24px
+      transition all 200ms
+      
+      PRIMARY variant (Growth — white button on dark card):
+        background white, color #0D0D0D
+        hover: background rgba(255,255,255,0.90)
+      
+      GHOST variant (light cards):
+        background transparent
+        border 1.5px solid #E0DED9
+        color #0D0D0D
+        hover: border-color #0D0D0D
+      
+      ENTERPRISE ghost (dark card if enterprise is dark):
+        background transparent
+        border 1.5px solid rgba(255,255,255,0.25)
+        color white
+        hover: border-color white
+      
+      onClick:
+        Free/Starter/Growth → navigate('/signup')
+        Enterprise → scroll to #contact or navigate('/signup?plan=enterprise')
+      
+      framer-motion whileHover: scale 1.01
+      whileTap: scale 0.99
+
+    DIVIDER:
+      height 1px
+      background: rgba(255,255,255,0.08) if highlighted, #F0EFED if not
+      margin-bottom 24px
+
+    FEATURES LIST:
       display flex, flex-direction column, gap 12px
       
-      Each message — motion.div:
-        key={message.id}
-        initial: opacity 0, y 8
-        animate: opacity 1, y 0
-        transition: duration 0.3, ease [0.16,1,0.3,1]
+      Section label: "What's included"
+        font-family 'JetBrains Mono', font-size 9px
+        letter-spacing 0.16em, text-transform uppercase
+        color: rgba(255,255,255,0.35) if highlighted, #9E9E9E if not
+        margin-bottom 4px
+      
+      Each feature row:
+        display flex, align-items flex-start, gap 10px
         
-        Speaker label:
-          font-family 'JetBrains Mono', font-size 8px
-          font-weight 500, letter-spacing 0.14em
-          text-transform uppercase
-          color: rgba(255,107,53,0.7) for user
-          color: rgba(107,107,107,0.6) for agent
-          margin-bottom 3px
+        Icon (16px × 16px circle):
+          flex-shrink 0, margin-top 1px
+          
+          INCLUDED:
+            background rgba(34,197,94,0.12)
+            border 1px solid rgba(34,197,94,0.20)
+            display flex, align-items center, justify-content center
+            <Check size={9}/> color #22C55E
+          
+          NOT INCLUDED:
+            background rgba(0,0,0,0.04) or rgba(255,255,255,0.06)
+            <X size={9}/> color: #C8C5C0 or rgba(255,255,255,0.25)
         
-        Message text:
+        Text:
+          font-family 'DM Sans', font-size 13px, font-weight 400
+          line-height 1.4
+          color: when included: white or #2A2A2A
+          color: when not: rgba(255,255,255,0.35) or #B0B0B0
+          
+          If has note:
+            After main text, small inline badge:
+              font-size 10px, font-weight 700
+              padding 1px 7px, border-radius 9999px
+              background rgba(255,107,53,0.12)
+              color #FF6B35
+              margin-left 6px
+              text: feature.note
+
+SECTION 3 — USAGE TABLE:
+  max-width 1280px, margin 0 auto
+  padding 0 32px 80px
+
+  Heading:
+    font-family 'Plus Jakarta Sans'
+    font-size clamp(28px, 4vw, 40px)
+    font-weight 300, letter-spacing -0.02em
+    color #0D0D0D, margin-bottom 8px
+    text: "Compare all features"
+  
+  Subtext: "See exactly what you get with each plan."
+    font-size 16px, color #6B6B6B, font-weight 300
+    margin-bottom 40px
+
+  TABLE:
+    width 100%, border-collapse separate, border-spacing 0
+    background white, border-radius 20px
+    overflow hidden
+    border 1px solid #E0DED9
+    
+    HEADER ROW:
+      background #FAFAFA
+      border-bottom 1px solid #E0DED9
+      
+      Columns: Feature | Free | Starter | Growth | Enterprise
+      
+      First header cell:
+        padding 20px 28px, text-align left
+        font-family 'JetBrains Mono', font-size 10px
+        letter-spacing 0.14em, color #9E9E9E, uppercase
+      
+      Plan name cells:
+        padding 20px 20px, text-align center
+        font-family 'Plus Jakarta Sans', font-size 15px
+        font-weight 500, color #0D0D0D
+        
+        Growth column header: color #FF6B35
+    
+    TABLE SECTIONS (grouped rows with section headers):
+      
+      Section header rows (full-width span):
+        background #F7F5F2
+        td colspan=5:
+          padding 12px 28px
+          font-family 'JetBrains Mono', font-size 9px
+          letter-spacing 0.16em, color #9E9E9E, uppercase
+      
+      Feature rows:
+        border-bottom 1px solid #F5F5F5
+        
+        First cell (feature name):
+          padding 16px 28px
+          font-family 'DM Sans', font-size 14px
+          font-weight 400, color #2A2A2A
+        
+        Value cells:
+          text-align center, padding 16px 20px
+          
+          If boolean: <Check size={16}/> green or <Minus size={16}/> gray
+          If text value: font-family 'DM Sans', font-size 13px, color #4A4A4A
+          
+          Growth column: font-weight 600
+        
+        Hover row: background #FAFAFA
+      
+      TABLE DATA:
+        Section: "Voice Agents"
+          Monthly calls: 500 | 5,000 | 50,000 | Unlimited
+          Languages: Hindi, English | +3 | All 8+ | All + custom
+          Latency: Standard | < 1s | < 800ms Flash | < 500ms
+          Phone deployment: ✗ | ✗ | 5 numbers | Unlimited
+          WhatsApp: ✗ | ✗ | ✓ | ✓
+          Outbound calling: ✗ | ✗ | ✓ | ✓
+        
+        Section: "Creative"
+          TTS characters: 10k/mo | 100k/mo | 1M/mo | Unlimited
+          Voice cloning: ✗ | 3 voices | Unlimited | Custom model
+          Music generation: Basic | ✓ | ✓ | ✓
+          Video synthesis: ✗ | ✗ | ✓ | ✓
+        
+        Section: "Platform"
+          API access: ✓ | ✓ | ✓ | ✓
+          Analytics: Basic | ✓ | Advanced | Enterprise
+          Eval kit: ✗ | ✗ | ✓ | ✓
+          Observatory: ✗ | ✗ | ✓ | ✓
+          SSO / SAML: ✗ | ✗ | ✗ | ✓
+          Audit logs: ✗ | ✗ | ✓ | ✓
+        
+        Section: "Support"
+          Community forum: ✓ | ✓ | ✓ | ✓
+          Email support: ✗ | ✓ | Priority | Dedicated
+          Slack channel: ✗ | ✗ | ✓ | ✓
+          SLA guarantee: ✗ | ✗ | 99.9% | 99.99%
+          Onboarding: ✗ | ✗ | ✗ | Custom
+
+SECTION 4 — FAQ:
+  max-width 720px, margin 0 auto
+  padding 0 32px 100px
+
+  Heading: "Frequently asked"
+    font-family 'Plus Jakarta Sans'
+    font-size clamp(28px, 4vw, 40px)
+    font-weight 300, letter-spacing -0.02em
+    text-align center, margin-bottom 48px
+
+  FAQ items (accordion):
+    State: const [openFaq, setOpenFaq] = useState<number|null>(null)
+    
+    const faqs = [
+      {
+        q: 'What counts as a "call"?',
+        a: 'One call = one complete voice conversation session. Whether it\'s 30 seconds or 30 minutes, it counts as one call. Concurrent calls on Growth+ are unlimited.'
+      },
+      {
+        q: 'Can I switch plans anytime?',
+        a: 'Yes. Upgrade immediately and get prorated credit. Downgrade takes effect at the next billing cycle. No lock-in contracts.'
+      },
+      {
+        q: 'Do you support all Indian languages?',
+        a: 'Free and Starter include Hindi, English, and Hinglish. Growth adds Tamil, Telugu, Marathi, Punjabi, and Haryanvi. Enterprise can add custom dialect models.'
+      },
+      {
+        q: 'What is the Eval Kit?',
+        a: 'The Eval Kit lets you test your agent\'s accuracy, latency, and conversation quality with simulated calls before going live. Available on Growth and Enterprise.'
+      },
+      {
+        q: 'Is there a free trial for Growth?',
+        a: 'Yes — 14-day free trial on Growth with no credit card required. All features included. Cancels automatically if you don\'t upgrade.'
+      },
+      {
+        q: 'How does voice cloning work?',
+        a: 'Upload 5+ minutes of clean audio. Our model trains a voice clone in under 2 hours. Starter gets 3 clones, Growth gets unlimited.'
+      },
+      {
+        q: 'What are the payment options?',
+        a: 'All major Indian payment methods: UPI, Razorpay, Net Banking, Credit/Debit cards. Invoices in INR. GST invoice available for business accounts.'
+      },
+    ]
+    
+    Each FAQ item:
+      border-bottom 1px solid #E0DED9
+      
+      Question row (clickable):
+        display flex, align-items center, justify-content space-between
+        padding 20px 0, cursor pointer
+        
+        Question text:
           font-family 'DM Sans'
-          font-size: 12px, font-weight: 400
-          line-height: 1.55, color: #2A2A2A
-          
-          NOT final (streaming):
-            color #9E9E9E, font-style italic
-          Final: full opacity
+          font-size 16px, font-weight 400
+          color #0D0D0D
+          hover: color #FF6B35
+          transition color 150ms
         
-        Timestamp:
-          font-family 'JetBrains Mono', font-size 8px
-          color #C8C5C0, margin-top 2px
-          text: formatTime(message.timestamp)
-    
-    Auto-scroll: useEffect when transcript changes:
-      transcriptRef.current?.scrollTo({
-        top: transcriptRef.current.scrollHeight,
-        behavior: 'smooth'
-      })
+        Icon:
+          framer-motion rotate: openFaq===i ? 45 : 0
+          transition duration 0.25
+          <Plus size={18}/> color #9E9E9E
+          (rotates to X when open)
+        
+        onClick: setOpenFaq(openFaq === i ? null : i)
+      
+      Answer (AnimatePresence):
+        motion.div:
+          initial: height 0, opacity 0
+          animate: height 'auto', opacity 1
+          exit: height 0, opacity 0
+          transition: duration 0.3, ease [0.16,1,0.3,1]
+        
+        Overflow hidden
+        
+        Inner content: padding 0 0 20px:
+          font-family 'DM Sans'
+          font-size 15px, font-weight 300
+          line-height 1.7, color #6B6B6B
 
-PANEL 2 — CENTER STAGE (flex 1):
-  height 100vh
+SECTION 5 — BOTTOM CTA BANNER:
+  background #0D0D0D
+  padding 80px 32px
+  text-align center
+  
+  Heading: "Start building for free today"
+    font-family 'Plus Jakarta Sans'
+    font-size clamp(32px, 5vw, 56px)
+    font-weight 300, letter-spacing -0.03em
+    color white, margin-bottom 16px
+  
+  Subtext: "No credit card. No lock-in. Deploy your first Hindi voice agent in minutes."
+    font-family 'DM Sans', font-size 16px, font-weight 300
+    color rgba(255,255,255,0.55), margin-bottom 40px
+  
+  Button row: display flex, gap 12px, justify-content center
+    
+    Button 1: "Get started free"
+      height 52px, padding 0 32px
+      background #FF6B35, color white
+      border none, border-radius 9999px
+      font-family 'DM Sans', font-size 15px, font-weight 600
+      cursor pointer
+      hover: background #E85A25
+      onClick: navigate('/signup')
+    
+    Button 2: "Talk to sales"
+      height 52px, padding 0 32px
+      background transparent
+      border 1.5px solid rgba(255,255,255,0.25)
+      color rgba(255,255,255,0.8), border-radius 9999px
+      font-family 'DM Sans', font-size 15px, font-weight 500
+      cursor pointer, hover: border-color white, color white
+
+════════════════════════════════════════════════════════════════
+PART B: LoginPage
+File: src/pages/AuthPage/LoginPage.tsx
+════════════════════════════════════════════════════════════════
+
+FULL SCREEN SPLIT LAYOUT:
+  height 100vh, display flex, overflow hidden
+
+LEFT PANEL (50% width, hidden below 768px):
+  background #0D0D0D
   display flex, flex-direction column
-  align-items center, justify-content center
-  position relative
-  overflow hidden
+  justify-content space-between
+  padding 48px
+  position relative, overflow hidden
   
-  Background per callState:
-    'idle': #F7F5F2 (plain warm white)
-    'connecting': subtle radial pulse animation
-    'active': radial gradients from both orbs bleeding:
-      radial-gradient(ellipse 60% 50% at 35% 50%,
-        {agent.orbGradient[0]}08 0%, transparent 60%)
-      + radial-gradient(ellipse 60% 50% at 65% 50%,
-        rgba(60,207,207,0.06) 0%, transparent 60%)
-    'ended': #F7F5F2
+  BACKGROUND DECORATION:
+    Two large gradient orbs (position absolute, pointer-events none):
+    
+    Orb 1 (top-right area):
+      width 400px, height 400px, border-radius 50%
+      background radial-gradient(circle,
+        rgba(255,107,53,0.25) 0%, transparent 70%)
+      position absolute, top -100px, right -100px
+      filter blur(60px)
+    
+    Orb 2 (bottom-left area):
+      width 300px, height 300px, border-radius 50%
+      background radial-gradient(circle,
+        rgba(26,115,232,0.20) 0%, transparent 70%)
+      position absolute, bottom -80px, left -80px
+      filter blur(60px)
   
-  Transition: background 1s ease
-
-  TOP STATUS BAR:
-    position absolute, top 24px, left 0, right 0
-    display flex, align-items center, justify-content center
+  TOP — Logo:
+    display flex, align-items center, gap 8px
     
-    AnimatePresence based on callState:
-      'idle':
-        Pill: "Press to start conversation"
-          background rgba(0,0,0,0.05)
-          border 1px solid rgba(0,0,0,0.08)
-          border-radius 9999px, padding 8px 20px
-          font-family 'DM Sans', font-size 13px
-          color #6B6B6B
+    Logo text:
+      font-family 'Plus Jakarta Sans', font-size 20px
+      font-weight 800, color white, letter-spacing -0.02em
+      display flex, align-items center, gap 1px
       
-      'connecting':
-        Pill: animated
-          background rgba(255,165,0,0.08)
-          border 1px solid rgba(255,165,0,0.20)
-          display flex, align-items center, gap 8px
-          
-          Spinner (border animation):
-            width 12px, height 12px, border-radius 50%
-            border 1.5px solid rgba(255,165,0,0.3)
-            border-top-color #F59E0B
-            animation spin 0.8s linear infinite
-          
-          Text: "Connecting to {agent.name}..."
-            font-family 'DM Sans', font-size 13px, color #F59E0B
-      
-      'active':
-        Pill: live indicator
-          background rgba(34,197,94,0.08)
-          border 1px solid rgba(34,197,94,0.20)
-          display flex, align-items center, gap 8px
-          
-          Pulsing green dot:
-            framer-motion opacity [1,0.3,1] duration 1.4 repeat Infinity
-          
-          Text: "{formatTime(sessionTime)} · Live"
-            font-family 'JetBrains Mono', font-size 12px
-            color #22C55E, font-weight 500
-      
-      'ended':
-        Pill: "Conversation ended"
-          background rgba(0,0,0,0.05)
-          Text color #6B6B6B
-
-  MAIN ORB STAGE:
-    display flex, align-items center, justify-content center
-    gap: varies by state
-    width 100%, position relative
+      Pipe: color rgba(255,255,255,0.35), font-weight 400
+      "Bhasini": color white
     
-    'idle' state — SINGLE orb (agent), centered:
-      Agent orb: 200px × 200px
-      Floating animation: y [0,-16,0] scale [1,1.03,1]
-        duration 5 repeat Infinity
-      
-      Below orb: agent name in thin typography
-        font-family 'Plus Jakarta Sans'
-        font-size 22px, font-weight 300
-        color #0D0D0D, letter-spacing -0.02em
-        margin-top 24px
-      
-      Below name: "Tap to begin"
-        font-family 'DM Sans', font-size 14px
-        color #9E9E9E, margin-top 8px
-
-    'connecting' state — orb pulses with rings:
-      Same single orb but:
-      3 concentric expanding rings behind it:
-        Each ring: border 1px solid {agent gradient color}20
-        border-radius 50%
-        framer-motion animate:
-          scale [1, 2.5, 1], opacity [0.5, 0, 0]
-          transition: duration 2, repeat Infinity
-          delay: 0, 0.5, 1.0 for three rings
+    BETA badge: same saffron gradient pill as navbar
+  
+  MIDDLE — Hero quote:
+    flex 1, display flex, flex-direction column
+    justify-content center
     
-    'active' state — TWO ORBS facing each other:
-      Layout: flex row, align-items center, gap 60px
-      
-      LEFT — USER ORB (140px):
-        background radial-gradient(circle at 32% 28%,
-          #FFD4A0 0%, #FF9A3C 22%, #FF6B35 52%,
-          #C44A1A 80%, #8B2500 100%)
-        box-shadow as before
-        
-        Speaking state animations:
-          when activeOrb==='user': orbSpeaking (scale pulse)
-          when activeOrb==='agent': breathe gently
-          
-        Speaking ring when active (same as InlineOrbDemo)
-        
-        Label below: "YOU"
-          font-family 'JetBrains Mono', font-size 9px
-          letter-spacing 0.18em, color #9E9E9E
-      
-      CENTER — PARTICLE CANVAS (160px × 240px):
-        Same particle system as InlineOrbDemo
-        But larger canvas
-        
-        PLUS: when neither orb is speaking (between turns),
-        show a thin pulsing horizontal line instead of particles:
-          position absolute, left 0, right 0
-          top 50%, height 1px
-          background linear-gradient(90deg,
-            transparent, rgba(255,107,53,0.3),
-            rgba(60,207,207,0.3), transparent)
-          framer-motion: opacity [0.3,0.8,0.3]
-            transition: duration 2, repeat Infinity
-      
-      RIGHT — AGENT ORB (140px):
-        Same gradient as InlineOrbDemo right orb
-        Same speaking/listening states (inverted)
-        
-        Label below: "BHASINI"
-          font-family 'JetBrains Mono', font-size 9px
-          letter-spacing 0.18em, color #9E9E9E
-      
-      Entrance animation for two-orb layout:
-        User orb: initial x -80, opacity 0
-          animate x 0, opacity 1
-          transition: duration 0.6, ease [0.16,1,0.3,1]
-        Agent orb: initial x 80, opacity 0
-          animate x 0, opacity 1
-          same transition
+    Large text (thin, elegant):
+      font-family 'Plus Jakarta Sans'
+      font-size clamp(28px, 3.5vw, 42px)
+      font-weight 300, letter-spacing -0.02em
+      color white, line-height 1.25
+      margin-bottom 24px
+      text: "Voice agents that\nunderstand India."
+      white-space pre-line
     
-    'ended' state:
-      Single agent orb, smaller (120px), opacity 0.5
-      Text: "Conversation ended"
-        font-family 'DM Sans', font-size 16px, color #9E9E9E
-        margin-top 20px
+    Below: rotating Indian language display:
+      State: const [langIdx, setLangIdx] = useState(0)
+      setInterval 2500ms, cycles 0-6
       
-      Button: "Start New"
-        height 44px, padding 0 24px
-        background #0D0D0D, color white
-        border-radius 9999px, cursor pointer
-        font-family 'DM Sans', font-size 14px, font-weight 500
-        margin-top 16px
-        onClick: setCallState('idle'), setTranscript([]),
-          setSessionTime(0)
-
-  CURRENT SPEAKER TEXT (shows during active call):
-    position absolute, bottom 140px, left 0, right 0
-    display flex, justify-content center
-    pointer-events none
-    
-    AnimatePresence mode="wait":
-      When there is a current streaming message:
+      const langSamples = [
+        { lang: 'Hindi', text: 'नमस्ते! कैसे मदद करूँ?', script: 'Devanagari' },
+        { lang: 'Tamil', text: 'வணக்கம்! எப்படி உதவட்டுமா?', script: 'Tamil' },
+        { lang: 'Telugu', text: 'నమస్కారం! ఎలా సహాయం చేయాలి?', script: 'Telugu' },
+        { lang: 'Marathi', text: 'नमस्कार! कशी मदत करू?', script: 'Devanagari' },
+        { lang: 'Punjabi', text: 'ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਕਿਵੇਂ ਮਦਦ ਕਰਾਂ?', script: 'Gurmukhi' },
+        { lang: 'English', text: 'Hello! How can I help you today?', script: 'Latin' },
+        { lang: 'Hinglish', text: 'Namaste! Main aapki kaise help karu?', script: 'Mixed' },
+      ]
+      
+      AnimatePresence mode="wait" key={langIdx}:
         motion.div:
           initial: opacity 0, y 12
           animate: opacity 1, y 0
-          exit: opacity 0, y -8
-          transition: duration 0.35
-          
-          Max-width 480px, text-align center
-          
-          Speaker label:
-            font-family 'JetBrains Mono', font-size 9px
-            letter-spacing 0.16em, uppercase
-            color: #FF6B35 for user, #6B6B6B for agent
-            margin-bottom 6px
-          
-          Text:
-            font-family 'DM Sans'
-            font-size: 18px, font-weight: 300
-            color: #0D0D0D, line-height: 1.5
-            letter-spacing: 0.005em
-            
-            ← THIS IS THE KEY TYPOGRAPHY MOMENT
-               Thin, elegant, readable, like ElevenLabs
-
-  BOTTOM CONTROLS:
-    position absolute, bottom 0, left 0, right 0
-    height 100px
-    display flex, align-items center, justify-content center
-    gap 16px
-    background linear-gradient(to top,
-      rgba(247,245,242,0.95) 0%, transparent 100%)
-    padding-bottom 24px
+          exit: opacity 0, y -12
+          transition: duration 0.4
+        
+        Language tag:
+          font-family 'JetBrains Mono', font-size 9px
+          letter-spacing 0.18em, color rgba(255,107,53,0.7)
+          text-transform uppercase, margin-bottom 8px
+        
+        Sample text:
+          font-family 'DM Sans', font-size 18px, font-weight 300
+          color rgba(255,255,255,0.80), line-height 1.5
+          font-style italic
     
-    Layout: three controls centered
+    Small stats row (margin-top 40px):
+      display flex, gap 32px
+      
+      { value: '8+', label: 'Languages' }
+      { value: '20+', label: 'Agent Types' }
+      { value: '77k+', label: 'Daily Calls' }
+      
+      Each stat:
+        value: font-family 'Plus Jakarta Sans', font-size 24px
+          font-weight 300, color white, letter-spacing -0.02em
+        label: font-family 'DM Sans', font-size 11px
+          color rgba(255,255,255,0.40), font-weight 400
+  
+  BOTTOM — testimonial:
+    padding 24px, background rgba(255,255,255,0.05)
+    border-radius 16px, border 1px solid rgba(255,255,255,0.08)
     
-    LEFT CONTROL — Mute button:
-      width 52px, height 52px, border-radius 50%
-      background: when muted rgba(239,68,68,0.10) else white
-      border: when muted 1.5px solid rgba(239,68,68,0.25) else 1.5px solid #E0DED9
-      cursor pointer
-      display flex, align-items center, justify-content center
-      box-shadow 0 2px 8px rgba(0,0,0,0.06)
-      transition all 200ms
+    Quote text:
+      font-family 'DM Sans', font-size 14px, font-weight 300
+      color rgba(255,255,255,0.70), line-height 1.6, margin-bottom 14px
+      text: '"Bhasini reduced our support call handling time by 68% with Hindi voice agents."'
+    
+    Attribution row:
+      display flex, align-items center, gap 10px
       
-      When muted: <MicOff size={20}/> color #EF4444
-      When not: <Mic size={20}/> color #4A4A4A
+      Avatar circle:
+        width 32px, height 32px, border-radius 50%
+        background linear-gradient(135deg, #FF6B35, #FF3CAC)
+        display flex, align-items center, justify-content center
+        font-size 12px, font-weight 700, color white
+        text: "RS"
       
-      onClick: setIsMuted(m => !m)
-      
-      framer-motion whileHover: scale 1.06
-      whileTap: scale 0.94
+      Name + company:
+        Name: "Rahul Sharma" — font-size 13px, font-weight 500, color white
+        Company: "Razorpay Engineering" — font-size 11px,
+          color rgba(255,255,255,0.45)
 
-    CENTER CONTROL — Main call button (LARGE):
-      width 72px, height 72px, border-radius 50%
-      cursor pointer
-      display flex, align-items center, justify-content center
-      border none
-      position relative
+RIGHT PANEL (50% width, 100% width on mobile):
+  background white
+  display flex, align-items center, justify-content center
+  padding 48px
+  overflow-y auto
+  
+  FORM CONTAINER:
+    width 100%, max-width 380px
+    
+    TOP SECTION:
+      margin-bottom 40px
       
-      When callState === 'idle':
-        background #0D0D0D
-        box-shadow 0 8px 32px rgba(0,0,0,0.20)
-        <Phone size={26}/> color white
-        
-        onClick: async start sequence:
-          setCallState('connecting')
-          await delay(2000)
-          setCallState('active')
-          startDemoConversation()
-        
-        framer-motion whileHover: scale 1.08
-        whileTap: scale 0.96
+      Welcome text:
+        font-family 'Plus Jakarta Sans'
+        font-size 28px, font-weight 300
+        letter-spacing -0.02em, color #0D0D0D
+        margin-bottom 8px
+        text: "Welcome back"
       
-      When callState === 'connecting':
-        background #F59E0B
-        Spinner overlay: rotating border
-        disabled
+      Subtext:
+        font-family 'DM Sans', font-size 15px
+        font-weight 300, color #6B6B6B
+        text: "Sign in to your Bhasini account"
       
-      When callState === 'active':
-        background linear-gradient(135deg, #EF4444, #DC2626)
-        box-shadow 0 8px 32px rgba(239,68,68,0.35)
-        <PhoneOff size={24}/> color white
-        
-        Pulsing ring behind button:
-          position absolute, inset -8px, border-radius 50%
-          border 2px solid rgba(239,68,68,0.25)
-          framer-motion: scale [1,1.3,1], opacity [0.5,0,0.5]
-            transition duration 1.8, repeat Infinity
-        
-        onClick:
-          setCallState('ended')
-          setActiveOrb(null)
-          stopDemoConversation()
-      
-      When callState === 'ended':
-        Same as idle
-
-    RIGHT CONTROL — Language button:
-      width 52px, height 52px, border-radius 50%
+      Signup link (inline):
+        margin-top 6px
+        font-size 14px, color #9E9E9E
+        "Don't have an account? "
+        <Link to="/signup">
+          color #FF6B35, font-weight 500
+          hover: text-decoration underline
+          text: "Sign up free"
+    
+    GOOGLE AUTH BUTTON:
+      width 100%, height 48px
       background white
       border 1.5px solid #E0DED9
-      cursor pointer
-      display flex, align-items center, justify-content center
-      box-shadow 0 2px 8px rgba(0,0,0,0.06)
-      position relative
+      border-radius 9999px
+      display flex, align-items center, justify-content center, gap 10px
+      cursor pointer, font-family 'DM Sans'
+      font-size 14px, font-weight 500, color #0D0D0D
+      transition all 200ms
+      hover: border-color #C8C5C0, box-shadow 0 2px 8px rgba(0,0,0,0.06)
+      margin-bottom 24px
       
-      Content: "🇮🇳" emoji font-size 18px
-      
-      onClick: setLangDropOpen(true)
-      
-      Language dropdown (same style as other dropdowns):
-        position absolute, bottom calc(100%+8px), right 0
-        min-width 160px
+      Google "G" icon (inline SVG or colored G):
+        width 18px, height 18px
+        Use a simple colored G:
+          display inline-block, width 18px, height 18px
+          border-radius 50%, background #4285F4
+          (or just use emoji: 🌐 temporarily)
         
-        Each language option: same styling as sidebar language buttons
+        Text: "Continue with Google"
+
+    DIVIDER:
+      display flex, align-items center, gap 16px
+      margin-bottom 24px
+      
+      Lines: flex 1, height 1px, background #E0DED9
+      Text: "or"
+        font-family 'DM Sans', font-size 12px, color #9E9E9E
+        white-space nowrap
+
+    EMAIL FIELD:
+      margin-bottom 16px
+      
+      Label:
+        font-family 'DM Sans', font-size 12px, font-weight 500
+        color #4A4A4A, margin-bottom 6px, display block
+        text: "Email address"
+      
+      Input:
+        width 100%, height 48px
+        padding 0 16px
+        background white
+        border 1.5px solid #E0DED9
+        border-radius 12px
+        font-family 'DM Sans', font-size 15px, color #0D0D0D
+        outline none
+        transition all 200ms
         
-        On select: setSelectedLanguage(lang), setLangDropOpen(false)
-      
-      framer-motion whileHover: scale 1.06
-      whileTap: scale 0.94
-    
-    Below controls, centered:
-      When active:
-        Text: "Tap red button to end"
-          font-family 'DM Sans', font-size 11px
-          color #C8C5C0, margin-top 8px
+        Focus: border-color #FF6B35,
+          box-shadow 0 0 0 3px rgba(255,107,53,0.12)
+        
+        placeholder color #C8C5C0
 
-PANEL 3 — RIGHT PANEL (320px, visible only on lg screens):
-  height 100vh
-  background white
-  border-left 1px solid #F0EFED
-  display flex, flex-direction column
-  flex-shrink 0
+    PASSWORD FIELD:
+      margin-bottom 8px
+      Same structure as email field
+      
+      Input type "password" with toggle:
+        position relative
+        
+        Toggle button (absolute right 14px, top 50% transform -50%):
+          background none, border none, cursor pointer
+          color #9E9E9E, hover color #4A4A4A
+          <Eye size={16}/> or <EyeOff size={16}/>
+          
+          State: const [showPassword, setShowPassword] = useState(false)
+          Input type: showPassword ? 'text' : 'password'
+
+    FORGOT PASSWORD LINK:
+      text-align right, margin-bottom 24px
+      font-family 'DM Sans', font-size 13px
+      color #FF6B35, cursor pointer, hover underline
+      text: "Forgot password?"
+
+    SUBMIT BUTTON:
+      width 100%, height 48px
+      background #0D0D0D, color white
+      border none, border-radius 9999px
+      font-family 'DM Sans', font-size 15px, font-weight 600
+      cursor pointer, transition all 200ms
+      
+      Loading state:
+        State: const [loading, setLoading] = useState(false)
+        onClick: setLoading(true), setTimeout 1500ms,
+          setLoading(false), navigate('/app/home')
+        
+        Loading: shows spinner + "Signing in..."
+        Normal: "Sign in"
+      
+      framer-motion whileHover: scale 1.01
+      whileTap: scale 0.99
+    
+    TERMS TEXT (below button):
+      margin-top 20px, text-align center
+      font-family 'DM Sans', font-size 11px
+      color #9E9E9E, line-height 1.6
+      "By signing in, you agree to our Terms of Service\nand Privacy Policy"
+
+════════════════════════════════════════════════════════════════
+PART C: SignupPage
+File: src/pages/AuthPage/SignupPage.tsx
+════════════════════════════════════════════════════════════════
+
+SAME SPLIT LAYOUT as LoginPage.
+Left panel: identical (same dark panel, same orb animations,
+same language cycling, same stats, same testimonial).
+
+RIGHT PANEL differences:
+
+  Welcome text: "Create your account"
+  Subtext: "Start building Indian voice agents today."
+  Link: "Already have an account? " + Link to="/login" "Sign in"
+
+  FORM FIELDS (in order):
+    1. Full name field (same input style)
+       Label: "Full name", placeholder: "Dhruv Kumar"
+    
+    2. Email field — same as login
+    
+    3. Password field — same with show/hide toggle
+       Below input: password strength indicator:
+         4 segment bar (each 25% width, rounded)
+         
+         State: const [strength, setStrength] = useState(0)
+         On password change, calculate:
+           strength 0 (empty): all gray
+           strength 1 (< 6 chars): 1 segment red
+           strength 2 (6+ chars): 2 segments orange
+           strength 3 (has number or symbol): 3 segments yellow
+           strength 4 (8+ chars + number + symbol): 4 segments green
+         
+         Strength bar:
+           display flex, gap 4px, margin-top 8px
+           
+           Each segment:
+             flex 1, height 3px, border-radius 9999px
+             transition background 300ms
+             Colors: 0=>#EFEFED, 1=>#EF4444, 2=>#F59E0B, 3=>#F59E0B, 4=>#22C55E
+         
+         Strength label:
+           font-size 11px, margin-top 4px
+           colors match bar, font-family 'DM Sans'
+           text: ['', 'Too short', 'Weak', 'Fair', 'Strong']
+    
+    4. Plan selector (optional step):
+       Label: "Choose your plan"
+       
+       3 option cards in a row (Free / Starter / Growth):
+         Each card:
+           flex 1, padding 12px
+           border 1.5px solid (selected: #0D0D0D, not: #E0DED9)
+           border-radius 12px, cursor pointer
+           text-align center, transition all 200ms
+           
+           Plan name: font-size 13px, font-weight 600, color #0D0D0D
+           Price: font-size 11px, color #9E9E9E
+             Free: "₹0/mo" | Starter: "₹999/mo" | Growth: "₹4,999/mo"
+           
+           Selected: border-color #0D0D0D, background #FAFAFA
+           Unselected: hover border-color #C8C5C0
+       
+       State: const [selectedPlan, setSelectedPlan] = useState('free')
+
+  SUBMIT BUTTON:
+    text: "Create account"
+    onClick: same simulate as login → navigate('/app/home')
   
-  Hide below 1200px: display none
+  GOOGLE BUTTON:
+    Same as login: "Sign up with Google"
+    (show ABOVE the form on signup, BELOW the divider after email)
   
-  HEADER (64px):
-    padding 0 20px
-    display flex, align-items center
-    border-bottom 1px solid #F0EFED
-    
-    Text: "Session Info"
-      font-family 'Plus Jakarta Sans'
-      font-size 14px, font-weight 400
-      color #0D0D0D, letter-spacing -0.01em
+  DIVIDER same as login
 
-  LIVE METRICS (padding 20px):
-    Label: "LIVE METRICS"
-    
-    4 metric rows:
-      {label: 'Latency', value: '<800ms', color: '#22C55E'}
-      {label: 'Language', value: selectedLanguage, color: '#FF6B35'}
-      {label: 'Model', value: 'Bhasini Flash', color: '#1A73E8'}
-      {label: 'Messages', value: transcript.length, color: '#6B6B6B'}
-    
-    Each row:
-      display flex, align-items center, justify-content space-between
-      padding 12px 0
-      border-bottom 1px solid #F5F5F5
-      
-      Label: font-size 12px, color #9E9E9E, font-family 'DM Sans'
-      
-      Value: font-size 13px, font-weight 600
-        color: row.color, font-family 'DM Sans'
-    
-    Latency value animates when active:
-      Randomly cycles between 750ms, 820ms, 680ms, 790ms
-      every 3 seconds using setInterval
-
-  AGENT DETAILS (padding 20px, border-top 1px solid #F5F5F5):
-    Label: "ABOUT THIS AGENT"
-    
-    System prompt preview:
-      background #FAFAFA, border-radius 12px, padding 14px
-      font-family 'JetBrains Mono', font-size 10px
-      color #6B6B6B, line-height 1.6
-      max-height 120px, overflow hidden
-      position relative
-      
-      Text: first 200 chars of agent.systemPrompt + "..."
-      
-      Bottom gradient fade:
-        position absolute, bottom 0, left 0, right 0
-        height 32px
-        background linear-gradient(to top,
-          #FAFAFA 0%, transparent 100%)
-    
-    Agent languages:
-      margin-top 16px
-      Same chip styling as modal
-
-  KEYBOARD SHORTCUTS (margin-top auto, padding 20px):
-    border-top 1px solid #F5F5F5
-    
-    Label: "SHORTCUTS"
-    
-    Rows:
-      {key: 'Space', action: 'Push to talk'}
-      {key: 'M', action: 'Toggle mute'}
-      {key: 'Esc', action: 'End call'}
-    
-    Each row:
-      display flex, align-items center, justify-content space-between
-      padding 8px 0
-      
-      Key: keyboard-style box:
-        padding 2px 8px
-        background #F0EFED, border-radius 6px
-        border 1px solid #E0DED9
-        font-family 'JetBrains Mono', font-size 10px
-        color #4A4A4A
-      
-      Action: font-size 12px, color #9E9E9E, font-family 'DM Sans'
-    
-    Keyboard shortcut handler (useEffect):
-      Space → push-to-talk (visual only)
-      M → toggleMute()
-      Escape → if active, end call
+  BELOW BUTTON:
+    "By creating an account, you agree to our Terms of Service
+    and Privacy Policy. We'll send occasional product updates."
+    font-size 11px, color #9E9E9E, text-align center
+    margin-top 20px
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-COMPLETE IMPORTS:
+ALL IMPORTS:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-AgentConversationPage/index.tsx:
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+PricingPage/index.tsx:
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  ArrowLeft, Phone, PhoneOff, Mic, MicOff,
-  Check, Globe
-} from 'lucide-react'
-import { agents } from '../../data/agents'
+import { Check, X, Plus, Minus } from 'lucide-react'
+import Navbar from '../../components/layout/Navbar'
 
-AgentDetailModal.tsx:
-import React, { useEffect, useRef } from 'react'
+LoginPage.tsx + SignupPage.tsx:
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  X, Phone, MessageCircle, Check,
-  ArrowRight, Share2
-} from 'lucide-react'
-import type { BhasiniAgent } from '../../data/agents'
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-HELPER FUNCTIONS:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60).toString().padStart(2, '0')
-  const s = (seconds % 60).toString().padStart(2, '0')
-  return `${m}:${s}`
-}
-
-function buildOrbGradient(colors: string[]): string {
-  return `radial-gradient(circle at 32% 28%, 
-    ${colors[0]} 0%, ${colors[1]} 45%, ${colors[2]} 100%)`
-}
-
-function getCapabilities(industry: string): string[] {
-  const map: Record<string, string[]> = {
-    'health-medical': ['Symptom Check','Appointment Booking',
-      'Report Explain','Doctor Finder','Prescription Help','Emergency Guide'],
-    'tourism': ['Heritage Sites','Local Cuisine','Festival Guide',
-      'Transport Tips','Hotel Suggest','Cultural Context'],
-    'customer-support': ['Refund Processing','Order Tracking',
-      'Complaint Filing','Account Help','Product Info','Escalation'],
-    'real-estate': ['Property Search','Price Analysis','Document Guide',
-      'RERA Check','Loan Advice','Locality Info'],
-    'travel': ['Trip Planning','Hotel Booking','Itinerary Build',
-      'Budget Planning','Visa Guide','Local Tips'],
-    'mental-health': ['Active Listening','Breathing Exercises',
-      'Mood Tracking','Grounding Techniques','Journal Prompts','Crisis Resources'],
-  }
-  return map[industry] || []
-}
+import { Eye, EyeOff } from 'lucide-react'
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ACCEPTANCE CRITERIA:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-MODAL:
-✓ Agent name uses font-weight 300 (thin, elegant)
-✓ Quick stats row shows 3 metrics based on industry
-✓ Description is light weight 300, generous line-height
-✓ Language chips use agent's gradient color for border/bg
-✓ Sample questions show hover arrow, clickable rows
-✓ Capabilities show 2-column grid with check icons
-✓ Mini conversation preview animates in staggered
-✓ "Start Conversation" button has pulsing green dot
-✓ Modal backdrop is blur+dark, not just dark
+PRICING PAGE:
+✓ 4 tier cards render, Growth card is elevated + dark
+✓ Monthly/Annual toggle animates price smoothly
+✓ Annual shows "Save 20%" badge + savings amount
+✓ Currency shows ₹ in saffron color
+✓ Limit pills grid (2×2) in each card
+✓ Feature rows: check (green) or X (gray) icons
+✓ Feature notes shown as orange pill badges
+✓ Comparison table renders with section groupings
+✓ FAQ accordion opens/closes smoothly
+✓ Bottom dark CTA banner with saffron button
+✓ All CTAs navigate correctly
 
-CONVERSATION PAGE:
-✓ /agents/:agentId/talk renders full screen (no navbar)
-✓ Three panels: left sidebar, center stage, right panel
-✓ Center shows single agent orb in idle state with "Tap to begin"
-✓ Phone button click → connecting state (spinner, yellow)
-✓ After 2s → active state, two orbs appear from sides
-✓ User orb: warm orange, agent orb: teal-blue
-✓ Speaking orb pulses, listening orb breathes gently
-✓ Particles travel between orbs
-✓ Current transcript line shows below orbs, thin typography
-✓ Session timer counts up in sidebar (MM:SS, saffron colored)
-✓ Transcript messages accumulate in left sidebar
-✓ Red phone button ends call → ended state
-✓ Language switcher updates selectedLanguage
-✓ Right panel shows live metrics, system prompt, shortcuts
-✓ Keyboard shortcuts (M, Esc) work
-✓ Mobile: right panel hidden, sidebar collapses
-✓ Zero TypeScript errors
-✓ Conversation script loops correctly
+LOGIN PAGE:
+✓ Full screen split: dark left + white right
+✓ Dark left panel: logo, rotating language samples, stats, testimonial
+✓ Language samples cycle every 2.5s with fade animation
+✓ Google button styled, email + password fields
+✓ Password show/hide toggle works
+✓ Forgot password link present
+✓ Loading spinner on submit for 1.5s
+✓ Redirects to /app/home after login
+
+SIGNUP PAGE:
+✓ Same split layout as login
+✓ Full name field added
+✓ Password strength bar updates live as user types
+✓ Plan selector: 3 cards, selected shows dark border
+✓ Google signup button present
+✓ Redirects to /app/home after signup
+✓ Zero TypeScript errors on all 3 files
